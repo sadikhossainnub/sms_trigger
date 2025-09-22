@@ -27,6 +27,7 @@ def setup_notification_templates():
 			"subject": "Invoice Due Reminder",
 			"document_type": "Sales Invoice",
 			"event": "Days After",
+			"date_changed": "due_date",
 			"days_in_advance": -7,
 			"condition": "doc.outstanding_amount > 0",
 			"message": "Dear {{ doc.customer_name }}, your invoice {{ doc.name }} for {{ doc.grand_total }} is overdue. Please make payment."
