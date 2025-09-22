@@ -15,15 +15,9 @@ def send_sms(mobile_no, message):
 		if not mobile_no:
 			return {"success": False, "error": "Invalid mobile number"}
 		
-		# Prepare SMS data
-		data = {
-			"receiver_list": [mobile_no],
-			"message": message
-		}
-		
 		# Use ERPNext's built-in SMS sending
 		from frappe.core.doctype.sms_settings.sms_settings import send_sms as frappe_send_sms
-		frappe_send_sms(data["receiver_list"], data["message"])
+		frappe_send_sms([mobile_no], message, success_msg=False)
 		
 		return {"success": True, "message": "SMS sent successfully"}
 		

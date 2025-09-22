@@ -79,6 +79,7 @@ class BulkSMS(Document):
 def process_bulk_sms(bulk_sms_name):
 	"""Background job to process bulk SMS"""
 	doc = frappe.get_doc("Bulk SMS", bulk_sms_name)
+	doc.reload()
 	doc.status = "Sending"
 	doc.save()
 	
@@ -111,8 +112,11 @@ def process_bulk_sms(bulk_sms_name):
 			# Create log entry
 			create_bulk_sms_log(doc, recipient)
 	
+	# Save recipient status updates
+	doc.save(ignore_version=True)
+	
 	doc.status = "Completed" if failed_count == 0 else "Failed"
-	doc.save()
+	doc.save(ignore_version=True)
 	
 	frappe.publish_realtime(
 		"bulk_sms_completed",
