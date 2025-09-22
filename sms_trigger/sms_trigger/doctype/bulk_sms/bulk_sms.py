@@ -78,6 +78,36 @@ class BulkSMS(Document):
 		)
 		
 		frappe.msgprint("Bulk SMS queued for sending")
+	
+	@frappe.whitelist()
+	def retry_failed_sms(self):
+		"""Retry sending failed SMS"""
+		if self.status not in ["Failed", "Completed"]:
+			frappe.throw("Can only retry from Failed or Completed status")
+		
+		# Reset failed recipients to pending
+		failed_count = 0
+		for recipient in self.recipients:
+			if recipient.status == "Failed":
+				recipient.status = "Pending"
+				recipient.error_message = ""
+				failed_count += 1
+		
+		if failed_count == 0:
+			frappe.throw("No failed SMS to retry")
+		
+		self.status = "Queued"
+		self.save()
+		
+		# Queue background job for retry
+		frappe.enqueue(
+			"sms_trigger.sms_trigger.doctype.bulk_sms.bulk_sms.process_bulk_sms",
+			bulk_sms_name=self.name,
+			queue="default",
+			timeout=3600
+		)
+		
+		frappe.msgprint(f"Retrying {failed_count} failed SMS")
 
 def process_bulk_sms(bulk_sms_name):
 	"""Background job to process bulk SMS"""
@@ -95,6 +125,14 @@ def process_bulk_sms(bulk_sms_name):
 	failed_count = 0
 	
 	for recipient in doc.recipients:
+		# Only process pending SMS (for retry functionality)
+		if recipient.status != "Pending":
+			if recipient.status == "Sent":
+				success_count += 1
+			elif recipient.status == "Failed":
+				failed_count += 1
+			continue
+			
 		try:
 			result = send_sms(recipient.mobile_no, doc.message)
 			

@@ -20,6 +20,29 @@ frappe.ui.form.on('Bulk SMS', {
 				});
 				}, __('Actions'));
 		}
+		
+		// Add retry button for failed campaigns
+		if (frm.doc.status === "Failed" || frm.doc.status === "Completed") {
+			let failed_count = 0;
+			frm.doc.recipients.forEach(function(recipient) {
+				if (recipient.status === "Failed") {
+					failed_count++;
+				}
+			});
+			
+			if (failed_count > 0) {
+				frm.add_custom_button(__('Retry Failed SMS'), function() {
+					frappe.confirm(
+						__('Are you sure you want to retry {0} failed SMS?', [failed_count]),
+						function() {
+							frm.call('retry_failed_sms').then(() => {
+								frm.reload_doc();
+							});
+						}
+					);
+				}, __('Actions'));
+			}
+		}
 	},
 	
 	filter_by: function(frm) {
