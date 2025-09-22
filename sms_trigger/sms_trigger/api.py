@@ -71,3 +71,16 @@ def get_sms_stats(from_date=None, to_date=None):
 		"stats": stats,
 		"success_rate": (next((s.count for s in stats if s.status == "Sent"), 0) / total * 100) if total > 0 else 0
 	}
+
+@frappe.whitelist()
+def create_bulk_sms(campaign_name, message, filter_by="All Customers", **filters):
+	"""API to create bulk SMS campaign"""
+	doc = frappe.get_doc({
+		"doctype": "Bulk SMS",
+		"campaign_name": campaign_name,
+		"message": message,
+		"filter_by": filter_by,
+		**filters
+	})
+	doc.insert()
+	return doc
