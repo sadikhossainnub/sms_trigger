@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bulk_sms",
+  "campaign_name",
+  "queue_status",
+  "column_break_4",
+  "queued_datetime",
+  "started_datetime",
+  "completed_datetime",
+  "section_break_8",
+  "total_recipients",
+  "success_count",
+  "failed_count",
+  "column_break_12",
+  "processing_time",
+  "success_rate",
+  "section_break_15",
+  "error_message"
+ ],
+ "fields": [
+  {
+   "fieldname": "bulk_sms",
+   "fieldtype": "Link",
+   "label": "Bulk SMS",
+   "options": "Bulk SMS"
+  },
+  {
+   "fetch_from": "bulk_sms.campaign_name",
+   "fieldname": "campaign_name",
+   "fieldtype": "Data",
+   "label": "Campaign Name"
+  },
+  {
+   "fieldname": "queue_status",
+   "fieldtype": "Select",
+   "label": "Queue Status",
+   "options": "Queued\nProcessing\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "queued_datetime",
+   "fieldtype": "Datetime",
+   "label": "Queued Date & Time"
+  },
+  {
+   "fieldname": "started_datetime",
+   "fieldtype": "Datetime",
+   "label": "Started Date & Time"
+  },
+  {
+   "fieldname": "completed_datetime",
+   "fieldtype": "Datetime",
+   "label": "Completed Date & Time"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break",
+   "label": "Statistics"
+  },
+  {
+   "fieldname": "total_recipients",
+   "fieldtype": "Int",
+   "label": "Total Recipients"
+  },
+  {
+   "fieldname": "success_count",
+   "fieldtype": "Int",
+   "label": "Success Count"
+  },
+  {
+   "fieldname": "failed_count",
+   "fieldtype": "Int",
+   "label": "Failed Count"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "processing_time",
+   "fieldtype": "Data",
+   "label": "Processing Time"
+  },
+  {
+   "fieldname": "success_rate",
+   "fieldtype": "Percent",
+   "label": "Success Rate"
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Text",
+   "label": "Error Message"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "SMS Trigger",
+ "name": "SMS Queue Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

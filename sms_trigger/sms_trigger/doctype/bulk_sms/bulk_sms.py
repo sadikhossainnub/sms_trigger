@@ -66,6 +66,9 @@ class BulkSMS(Document):
 		self.status = "Queued"
 		self.save()
 		
+		# Create queue log
+		create_sms_queue_log(self)
+		
 		# Queue background job for sending
 		frappe.enqueue(
 			"sms_trigger.sms_trigger.doctype.bulk_sms.bulk_sms.process_bulk_sms",
@@ -81,7 +84,10 @@ def process_bulk_sms(bulk_sms_name):
 	doc = frappe.get_doc("Bulk SMS", bulk_sms_name)
 	doc.reload()
 	doc.status = "Sending"
-	doc.save()
+	doc.save(ignore_version=True)
+	
+	# Update queue log
+	update_sms_queue_log(bulk_sms_name, "Processing", started_datetime=now_datetime())
 	
 	from sms_trigger.sms_trigger.utils.sms_gateway import send_sms
 	
@@ -118,6 +124,15 @@ def process_bulk_sms(bulk_sms_name):
 	doc.status = "Completed" if failed_count == 0 else "Failed"
 	doc.save(ignore_version=True)
 	
+	# Update final queue log
+	update_sms_queue_log(
+		bulk_sms_name, 
+		"Completed" if failed_count == 0 else "Failed",
+		completed_datetime=now_datetime(),
+		success_count=success_count,
+		failed_count=failed_count
+	)
+	
 	frappe.publish_realtime(
 		"bulk_sms_completed",
 		{"success": success_count, "failed": failed_count},
@@ -137,3 +152,29 @@ def create_bulk_sms_log(bulk_sms_doc, recipient):
 		"sent_datetime": recipient.sent_datetime,
 		"error_message": recipient.error_message
 	}).insert()
+
+def create_sms_queue_log(bulk_sms_doc):
+	"""Create SMS queue log entry"""
+	frappe.get_doc({
+		"doctype": "SMS Queue Log",
+		"bulk_sms": bulk_sms_doc.name,
+		"queue_status": "Queued",
+		"queued_datetime": now_datetime(),
+		"total_recipients": bulk_sms_doc.total_recipients
+	}).insert()
+
+def update_sms_queue_log(bulk_sms_name, status, **kwargs):
+	"""Update SMS queue log"""
+	queue_log = frappe.db.get_value("SMS Queue Log", {"bulk_sms": bulk_sms_name}, "name")
+	if queue_log:
+		doc = frappe.get_doc("SMS Queue Log", queue_log)
+		doc.queue_status = status
+		
+		for key, value in kwargs.items():
+			setattr(doc, key, value)
+		
+		if kwargs.get("success_count") and kwargs.get("failed_count"):
+			total = kwargs["success_count"] + kwargs["failed_count"]
+			doc.success_rate = (kwargs["success_count"] / total * 100) if total > 0 else 0
+		
+		doc.save()
