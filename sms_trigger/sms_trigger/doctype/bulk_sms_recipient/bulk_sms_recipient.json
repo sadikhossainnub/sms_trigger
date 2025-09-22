@@ -21,16 +21,53 @@
    "options": "Customer"
   },
   {
+   "fetch_from": "customer.customer_name",
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Customer Name"
   },
   {
+   "fetch_from": "customer.mobile_no",
    "fieldname": "mobile_no",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Mobile No"
+  },
+  {
+   "fetch_from": "customer.customer_group",
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fetch_from": "customer.territory",
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory"
+  },
+  {
+   "fetch_from": "customer.gender",
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "Male\nFemale\nOther"
+  },
+  {
+   "fetch_from": "customer.religion",
+   "fieldname": "religion",
+   "fieldtype": "Select",
+   "label": "Religion",
+   "options": "Islam\nHindu\nChristian\nBuddhist\nOther"
+  },
+  {
+   "fetch_from": "customer.profession",
+   "fieldname": "profession",
+   "fieldtype": "Select",
+   "label": "Profession",
+   "options": "Doctor\nEngineer\nTeacher\nBusiness\nStudent\nOther"
   },
   {
    "default": "Pending",
