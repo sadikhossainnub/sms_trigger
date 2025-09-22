@@ -26,11 +26,6 @@ frappe.ui.form.on('Bulk SMS', {
 		frm.trigger('load_recipients');
 	},
 	
-	customer_type: function(frm) {
-		if (frm.doc.filter_by === "Customer Type") {
-			frm.trigger('load_recipients');
-		}
-	},
 	
 	customer_group: function(frm) {
 		if (frm.doc.filter_by === "Customer Group") {
@@ -52,6 +47,12 @@ frappe.ui.form.on('Bulk SMS', {
 	
 	religion: function(frm) {
 		if (frm.doc.filter_by === "Religion") {
+			frm.trigger('load_recipients');
+		}
+	},
+	
+	profession: function(frm) {
+		if (frm.doc.filter_by === "Profession") {
 			frm.trigger('load_recipients');
 		}
 	},

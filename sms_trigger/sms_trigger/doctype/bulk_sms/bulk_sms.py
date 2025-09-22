@@ -37,9 +37,7 @@ class BulkSMS(Document):
 		"""Get customers based on filter criteria"""
 		filters = {"mobile_no": ["!=", ""]}
 		
-		if self.filter_by == "Customer Type" and self.customer_type:
-			filters["customer_type"] = self.customer_type
-		elif self.filter_by == "Customer Group" and self.customer_group:
+		if self.filter_by == "Customer Group" and self.customer_group:
 			filters["customer_group"] = self.customer_group
 		elif self.filter_by == "Territory" and self.territory:
 			filters["territory"] = self.territory
@@ -47,6 +45,8 @@ class BulkSMS(Document):
 			filters["gender"] = self.gender
 		elif self.filter_by == "Religion" and self.religion:
 			filters["religion"] = self.religion
+		elif self.filter_by == "Profession" and self.profession:
+			filters["profession"] = self.profession
 		elif self.filter_by == "Custom Filter" and self.custom_filter:
 			custom_filters = json.loads(self.custom_filter)
 			filters.update(custom_filters)
@@ -98,11 +98,17 @@ def process_bulk_sms(bulk_sms_name):
 				recipient.status = "Failed"
 				recipient.error_message = result.get("error", "Unknown error")
 				failed_count += 1
+			
+			# Create log entry
+			create_bulk_sms_log(doc, recipient)
 				
 		except Exception as e:
 			recipient.status = "Failed"
 			recipient.error_message = str(e)
 			failed_count += 1
+			
+			# Create log entry
+			create_bulk_sms_log(doc, recipient)
 	
 	doc.status = "Completed" if failed_count == 0 else "Failed"
 	doc.save()
@@ -112,3 +118,17 @@ def process_bulk_sms(bulk_sms_name):
 		{"success": success_count, "failed": failed_count},
 		user=doc.owner
 	)
+
+def create_bulk_sms_log(bulk_sms_doc, recipient):
+	"""Create log entry for each SMS sent"""
+	frappe.get_doc({
+		"doctype": "Bulk SMS Log",
+		"bulk_sms": bulk_sms_doc.name,
+		"customer": recipient.customer,
+		"customer_name": recipient.customer_name,
+		"mobile_no": recipient.mobile_no,
+		"message": bulk_sms_doc.message,
+		"status": recipient.status,
+		"sent_datetime": recipient.sent_datetime,
+		"error_message": recipient.error_message
+	}).insert()

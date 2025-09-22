@@ -1,0 +1,111 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bulk_sms",
+  "campaign_name",
+  "customer",
+  "customer_name",
+  "column_break_5",
+  "mobile_no",
+  "status",
+  "sent_datetime",
+  "section_break_9",
+  "message",
+  "section_break_11",
+  "error_message"
+ ],
+ "fields": [
+  {
+   "fieldname": "bulk_sms",
+   "fieldtype": "Link",
+   "label": "Bulk SMS",
+   "options": "Bulk SMS"
+  },
+  {
+   "fetch_from": "bulk_sms.campaign_name",
+   "fieldname": "campaign_name",
+   "fieldtype": "Data",
+   "label": "Campaign Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nSent\nFailed"
+  },
+  {
+   "fieldname": "sent_datetime",
+   "fieldtype": "Datetime",
+   "label": "Sent Date & Time"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break",
+   "label": "Message"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Text",
+   "label": "Message"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Text",
+   "label": "Error Message"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "SMS Trigger",
+ "name": "Bulk SMS Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
