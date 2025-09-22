@@ -1,6 +1,7 @@
 [
  {
   "doctype": "SMS Trigger Rule",
+  "name": "Invoice Due Reminder",
   "rule_name": "Invoice Due Reminder",
   "trigger_type": "Invoice Due",
   "frequency": "Daily",
@@ -11,6 +12,7 @@
  },
  {
   "doctype": "SMS Trigger Rule",
+  "name": "Birthday Wishes",
   "rule_name": "Birthday Wishes",
   "trigger_type": "Birthday",
   "frequency": "Daily",
@@ -20,6 +22,7 @@
  },
  {
   "doctype": "SMS Trigger Rule",
+  "name": "Inactive Customer Reminder",
   "rule_name": "Inactive Customer Reminder",
   "trigger_type": "Inactive Customer",
   "frequency": "Monthly",
@@ -30,6 +33,7 @@
  },
  {
   "doctype": "SMS Trigger Rule",
+  "name": "Repurchase Promotion",
   "rule_name": "Repurchase Promotion",
   "trigger_type": "Repurchase Promotion",
   "frequency": "Monthly",
