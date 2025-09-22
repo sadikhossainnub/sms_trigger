@@ -1,0 +1,107 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"6No-utEr9B\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">SMS</span>\",\"col\":12}},{\"id\":\"tTHMXGqrXx\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bulk SMS\",\"col\":3}},{\"id\":\"59u_y6ShgE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"rdW61-mgX8\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS\",\"col\":4}},{\"id\":\"T1_r3vkY6S\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS Trigger\",\"col\":4}}]",
+ "creation": "2025-09-22 13:26:18.542838",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "mail",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "SMS",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Settings",
+   "link_count": 0,
+   "link_to": "SMS Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Center",
+   "link_count": 0,
+   "link_to": "SMS Center",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Log",
+   "link_count": 0,
+   "link_to": "SMS Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Trigger",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Scheduled SMS",
+   "link_count": 0,
+   "link_to": "Scheduled SMS",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SMS Trigger Rule",
+   "link_count": 0,
+   "link_to": "SMS Trigger Rule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-09-22 13:28:17.035462",
+ "modified_by": "Administrator",
+ "module": "SMS Trigger",
+ "name": "SMS",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 38.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Bulk SMS",
+   "link_to": "Bulk SMS",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "SMS"
+}

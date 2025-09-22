@@ -17,6 +17,7 @@ class BulkSMS(Document):
 	def before_save(self):
 		self.load_recipients()
 	
+	@frappe.whitelist()
 	def load_recipients(self):
 		"""Load recipients based on filter criteria"""
 		customers = self.get_filtered_customers()
