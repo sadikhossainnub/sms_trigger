@@ -75,16 +75,16 @@
   {
    "depends_on": "eval:doc.filter_by=='Gender'",
    "fieldname": "gender",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Gender",
-   "options": "Male\nFemale\nOther"
+   "options": "Gender"
   },
   {
    "depends_on": "eval:doc.filter_by=='Religion'",
    "fieldname": "religion",
    "fieldtype": "Select",
    "label": "Religion",
-   "options": "Islam\nHindu\nChristian\nBuddhist\nOther"
+   "options": "Hindu\nChristian\nMuslim\nBuddha"
   },
   {
    "depends_on": "eval:doc.filter_by=='Profession'",
@@ -149,7 +149,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-22 13:12:39.006847",
+ "modified": "2025-09-22 13:33:17.975206",
  "modified_by": "Administrator",
  "module": "SMS Trigger",
  "name": "Bulk SMS",
