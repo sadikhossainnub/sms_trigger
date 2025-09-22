@@ -1,0 +1,41 @@
+[
+ {
+  "doctype": "SMS Trigger Rule",
+  "rule_name": "Invoice Due Reminder",
+  "trigger_type": "Invoice Due",
+  "frequency": "Daily",
+  "days_interval": 7,
+  "is_active": 1,
+  "conditions": "{}",
+  "message_template": "Dear {customer_name}, your invoice {invoice_no} for amount {amount} is overdue. Please make payment at your earliest convenience."
+ },
+ {
+  "doctype": "SMS Trigger Rule",
+  "rule_name": "Birthday Wishes",
+  "trigger_type": "Birthday",
+  "frequency": "Daily",
+  "is_active": 1,
+  "conditions": "{}",
+  "message_template": "Happy Birthday {customer_name}! Wishing you a wonderful year ahead. Thank you for being our valued customer."
+ },
+ {
+  "doctype": "SMS Trigger Rule",
+  "rule_name": "Inactive Customer Reminder",
+  "trigger_type": "Inactive Customer",
+  "frequency": "Monthly",
+  "days_interval": 90,
+  "is_active": 1,
+  "conditions": "{}",
+  "message_template": "Hi {customer_name}, we miss you! Check out our latest offers and products. Visit us today!"
+ },
+ {
+  "doctype": "SMS Trigger Rule",
+  "rule_name": "Repurchase Promotion",
+  "trigger_type": "Repurchase Promotion",
+  "frequency": "Monthly",
+  "days_interval": 30,
+  "is_active": 1,
+  "conditions": "{\"item_code\": \"ITEM-001\"}",
+  "message_template": "Hi {customer_name}, time to restock {item_code}! Get 10% off on your next purchase. Order now!"
+ }
+]

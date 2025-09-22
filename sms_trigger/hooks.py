@@ -83,7 +83,12 @@ app_license = "mit"
 # ------------
 
 # before_install = "sms_trigger.install.before_install"
-# after_install = "sms_trigger.install.after_install"
+after_install = "sms_trigger.sms_trigger.install.after_install"
+
+# Fixtures
+# --------
+
+fixtures = ["SMS Trigger Rule"]
 
 # Uninstallation
 # ------------
@@ -111,7 +116,7 @@ app_license = "mit"
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "sms_trigger.notifications.get_notification_config"
+notification_config = "sms_trigger.sms_trigger.notifications.get_notification_config"
 
 # Permissions
 # -----------
@@ -148,23 +153,16 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"sms_trigger.tasks.all"
-# 	],
-# 	"daily": [
-# 		"sms_trigger.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"sms_trigger.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"sms_trigger.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"sms_trigger.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"sms_trigger.sms_trigger.utils.trigger_engine.process_sms_triggers"
+	],
+	"cron": {
+		"*/10 * * * *": [
+			"sms_trigger.sms_trigger.utils.trigger_engine.send_pending_sms"
+		]
+	}
+}
 
 # Testing
 # -------
