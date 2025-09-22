@@ -141,6 +141,12 @@
    "label": "Recipients"
   },
   {
+   "depends_on": "eval:!doc.__islocal && doc.status=='Draft' && doc.total_recipients>0",
+   "fieldname": "send_sms_button",
+   "fieldtype": "Button",
+   "label": "Send Bulk SMS"
+  },
+  {
    "fieldname": "recipients",
    "fieldtype": "Table",
    "label": "Recipients",

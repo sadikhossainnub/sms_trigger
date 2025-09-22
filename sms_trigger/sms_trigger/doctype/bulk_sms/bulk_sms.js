@@ -1,6 +1,6 @@
 frappe.ui.form.on('Bulk SMS', {
 	refresh: function(frm) {
-		if (frm.doc.docstatus === 0 && frm.doc.status === "Draft" && frm.doc.total_recipients > 0) {
+		if (frm.doc.docstatus === 0 && frm.doc.status === "Draft" && frm.doc.total_recipients > 0 && !frm.is_new()) {
 			frm.add_custom_button(__('Send Bulk SMS'), function() {
 				frappe.confirm(
 					__('Are you sure you want to send SMS to {0} recipients?', [frm.doc.total_recipients]),
@@ -18,7 +18,7 @@ frappe.ui.form.on('Bulk SMS', {
 				frm.call('load_recipients').then(() => {
 					frm.reload_doc();
 				});
-			}, __('Actions'));
+				}, __('Actions'));
 		}
 	},
 	
@@ -70,5 +70,16 @@ frappe.ui.form.on('Bulk SMS', {
 				frm.refresh_field('total_recipients');
 			});
 		}
+	},
+	
+	send_sms_button: function(frm) {
+		frappe.confirm(
+			__('Are you sure you want to send SMS to {0} recipients?', [frm.doc.total_recipients]),
+			function() {
+				frm.call('send_bulk_sms').then(() => {
+					frm.reload_doc();
+				});
+			}
+		);
 	}
 });
