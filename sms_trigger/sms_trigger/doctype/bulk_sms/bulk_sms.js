@@ -23,17 +23,10 @@ frappe.ui.form.on('Bulk SMS', {
 		
 		// Add retry button for failed campaigns
 		if (frm.doc.status === "Failed" || frm.doc.status === "Completed") {
-			let failed_count = 0;
-			frm.doc.recipients.forEach(function(recipient) {
-				if (recipient.status === "Failed") {
-					failed_count++;
-				}
-			});
-			
-			if (failed_count > 0) {
+			if (frm.doc.failed_count > 0) {
 				frm.add_custom_button(__('Retry Failed SMS'), function() {
 					frappe.confirm(
-						__('Are you sure you want to retry {0} failed SMS?', [failed_count]),
+						__('Are you sure you want to retry {0} failed SMS?', [frm.doc.failed_count]),
 						function() {
 							frm.call('retry_failed_sms').then(() => {
 								frm.reload_doc();
@@ -104,5 +97,22 @@ frappe.ui.form.on('Bulk SMS', {
 				});
 			}
 		);
+	}
+});
+
+// Real-time progress updates
+frappe.realtime.on('bulk_sms_progress', function(data) {
+	if (cur_frm && cur_frm.doc.doctype === 'Bulk SMS') {
+		cur_frm.reload_doc();
+	}
+});
+
+frappe.realtime.on('bulk_sms_completed', function(data) {
+	if (cur_frm && cur_frm.doc.doctype === 'Bulk SMS') {
+		cur_frm.reload_doc();
+		frappe.show_alert({
+			message: __('Bulk SMS completed: {0} success, {1} failed', [data.success, data.failed]),
+			indicator: 'green'
+		});
 	}
 });

@@ -136,6 +136,18 @@
    "read_only": 1
   },
   {
+   "fieldname": "success_count",
+   "fieldtype": "Int",
+   "label": "Success Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "failed_count",
+   "fieldtype": "Int",
+   "label": "Failed Count",
+   "read_only": 1
+  },
+  {
    "fieldname": "section_break_17",
    "fieldtype": "Section Break",
    "label": "Recipients"

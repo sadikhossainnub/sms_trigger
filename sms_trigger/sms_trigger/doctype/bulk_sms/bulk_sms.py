@@ -108,6 +108,20 @@ class BulkSMS(Document):
 		)
 		
 		frappe.msgprint(f"Retrying {failed_count} failed SMS")
+	
+	def update_counts(self):
+		"""Update success and failed counts"""
+		success_count = 0
+		failed_count = 0
+		
+		for recipient in self.recipients:
+			if recipient.status == "Sent":
+				success_count += 1
+			elif recipient.status == "Failed":
+				failed_count += 1
+		
+		self.success_count = success_count
+		self.failed_count = failed_count
 
 def process_bulk_sms(bulk_sms_name):
 	"""Background job to process bulk SMS"""
@@ -124,6 +138,7 @@ def process_bulk_sms(bulk_sms_name):
 	success_count = 0
 	failed_count = 0
 	
+	processed_count = 0
 	for recipient in doc.recipients:
 		# Only process pending SMS (for retry functionality)
 		if recipient.status != "Pending":
@@ -148,6 +163,18 @@ def process_bulk_sms(bulk_sms_name):
 			# Create log entry
 			create_bulk_sms_log(doc, recipient)
 			
+			processed_count += 1
+			
+			# Save progress every 10 SMS
+			if processed_count % 10 == 0:
+				doc.update_counts()
+				doc.save(ignore_version=True)
+				frappe.publish_realtime(
+					"bulk_sms_progress",
+					{"processed": processed_count, "success": success_count, "failed": failed_count},
+					user=doc.owner
+				)
+			
 			# Add delay to avoid rate limiting
 			import time
 			time.sleep(3)  # 3 second delay between SMS
@@ -156,13 +183,23 @@ def process_bulk_sms(bulk_sms_name):
 			recipient.status = "Failed"
 			recipient.error_message = str(e)
 			failed_count += 1
+			processed_count += 1
 			
 			# Create log entry
 			create_bulk_sms_log(doc, recipient)
+			
+			# Save progress every 10 SMS
+			if processed_count % 10 == 0:
+				doc.update_counts()
+				doc.save(ignore_version=True)
+				frappe.publish_realtime(
+					"bulk_sms_progress",
+					{"processed": processed_count, "success": success_count, "failed": failed_count},
+					user=doc.owner
+				)
 	
-	# Save recipient status updates
-	doc.save(ignore_version=True)
-	
+	# Update counts and save
+	doc.update_counts()
 	doc.status = "Completed" if failed_count == 0 else "Failed"
 	doc.save(ignore_version=True)
 	
