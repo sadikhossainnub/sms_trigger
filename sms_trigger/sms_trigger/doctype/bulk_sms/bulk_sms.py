@@ -109,6 +109,10 @@ def process_bulk_sms(bulk_sms_name):
 			
 			# Create log entry
 			create_bulk_sms_log(doc, recipient)
+			
+			# Add delay to avoid rate limiting
+			import time
+			time.sleep(3)  # 3 second delay between SMS
 				
 		except Exception as e:
 			recipient.status = "Failed"
