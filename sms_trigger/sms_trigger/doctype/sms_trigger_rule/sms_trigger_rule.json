@@ -15,7 +15,10 @@
   "section_break_7",
   "conditions",
   "section_break_9",
-  "message_template"
+  "message_template",
+  "section_break_11",
+  "last_execution",
+  "execution_count"
  ],
  "fields": [
   {
@@ -75,6 +78,24 @@
    "fieldtype": "Text Editor",
    "label": "Message Template",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Execution Info"
+  },
+  {
+   "fieldname": "last_execution",
+   "fieldtype": "Datetime",
+   "label": "Last Execution",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "execution_count",
+   "fieldtype": "Int",
+   "label": "Execution Count",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,

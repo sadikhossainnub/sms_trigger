@@ -84,3 +84,74 @@ def create_bulk_sms(campaign_name, message, filter_by="All Customers", **filters
 	})
 	doc.insert()
 	return doc
+
+@frappe.whitelist()
+def enable_sms_rule(rule_name):
+	"""Enable SMS trigger rule"""
+	rule = frappe.get_doc("SMS Trigger Rule", rule_name)
+	rule.enable_rule()
+	return {"success": True, "message": f"Rule '{rule_name}' enabled"}
+
+@frappe.whitelist()
+def disable_sms_rule(rule_name):
+	"""Disable SMS trigger rule"""
+	rule = frappe.get_doc("SMS Trigger Rule", rule_name)
+	rule.disable_rule()
+	return {"success": True, "message": f"Rule '{rule_name}' disabled"}
+
+@frappe.whitelist()
+def toggle_sms_rule(rule_name):
+	"""Toggle SMS trigger rule status"""
+	rule = frappe.get_doc("SMS Trigger Rule", rule_name)
+	if rule.is_active:
+		rule.disable_rule()
+		status = "disabled"
+	else:
+		rule.enable_rule()
+		status = "enabled"
+	return {"success": True, "message": f"Rule '{rule_name}' {status}"}
+
+@frappe.whitelist()
+def validate_sms_conditions(conditions):
+	"""Validate SMS trigger conditions JSON"""
+	try:
+		import json
+		parsed = json.loads(conditions)
+		if not isinstance(parsed, dict):
+			return {"valid": False, "error": "Conditions must be a JSON object"}
+		return {"valid": True, "parsed": parsed}
+	except json.JSONDecodeError as e:
+		return {"valid": False, "error": f"Invalid JSON: {str(e)}"}
+
+@frappe.whitelist()
+def test_sms_rule(rule_name, test_customer=None):
+	"""Test SMS rule with a specific customer"""
+	rule = frappe.get_doc("SMS Trigger Rule", rule_name)
+	
+	if not test_customer:
+		# Get first customer with mobile number
+		test_customer = frappe.db.get_value("Customer", 
+			{"mobile_no": ["!=", ""]}, "name")
+	
+	if not test_customer:
+		return {"success": False, "error": "No customer with mobile number found"}
+	
+	customer_doc = frappe.get_doc("Customer", test_customer)
+	
+	try:
+		message = rule.message_template.format(
+			customer_name=customer_doc.customer_name
+		)
+		
+		from sms_trigger.sms_trigger.utils.sms_gateway import send_sms
+		result = send_sms(customer_doc.mobile_no, message)
+		
+		return {
+			"success": result.get("success", False),
+			"message": message,
+			"customer": test_customer,
+			"mobile_no": customer_doc.mobile_no,
+			"result": result
+		}
+	except Exception as e:
+		return {"success": False, "error": str(e)}
