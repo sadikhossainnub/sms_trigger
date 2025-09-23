@@ -235,7 +235,7 @@ def create_scheduled_sms(customer, message, trigger_type, reference_doctype=None
 	return doc
 
 def send_pending_sms():
-	"""Send all pending SMS"""
+	"""Send all pending SMS - only Draft status, no retries"""
 	pending_sms = frappe.get_all("Scheduled SMS",
 		filters={
 			"status": "Draft",
@@ -245,5 +245,10 @@ def send_pending_sms():
 	)
 	
 	for sms in pending_sms:
-		doc = frappe.get_doc("Scheduled SMS", sms.name)
-		doc.send_sms()
+		try:
+			doc = frappe.get_doc("Scheduled SMS", sms.name)
+			# Only send if still Draft (double-check to prevent race conditions)
+			if doc.status == "Draft":
+				doc.send_sms()
+		except Exception as e:
+			frappe.log_error(f"Error sending SMS {sms.name}: {str(e)}", "SMS Send Error")

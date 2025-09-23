@@ -9,6 +9,10 @@ class ScheduledSMS(Document):
 			self.mobile_no = customer.mobile_no
 	
 	def send_sms(self):
+		# Prevent duplicate sends - only send if status is Draft
+		if self.status != "Draft":
+			return {"success": False, "error": "SMS already processed"}
+		
 		try:
 			from sms_trigger.sms_trigger.utils.sms_gateway import send_sms
 			result = send_sms(self.mobile_no, self.message)
