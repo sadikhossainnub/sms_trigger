@@ -18,7 +18,7 @@ class SMSTriggerRule(Document):
 	
 	def validate_frequency(self):
 		if self.frequency in ["Weekly", "Monthly"] and not self.days_interval:
-			frappe.throw(f"Days interval is required for {self.frequency} frequency")
+			frappe.throw(f"Days interval is required for frequency '{self.frequency}'", title="Validation Error", fieldname="days_interval")
 	
 	def enable_rule(self):
 		"""Enable the SMS trigger rule"""
@@ -37,7 +37,7 @@ class SMSTriggerRule(Document):
 		if not self.is_active:
 			return False
 		
-		from frappe.utils import getdate
+		from frappe.utils import getdate, get_datetime
 		
 		# Check last execution
 		if not self.last_execution:
@@ -49,9 +49,10 @@ class SMSTriggerRule(Document):
 		if self.frequency == "Daily":
 			return last_date < today
 		elif self.frequency == "Weekly":
-			return (today - last_date).days >= 7
+			return get_datetime(today).isocalendar()[1] != get_datetime(last_date).isocalendar()[1] or \
+				   (today - last_date).days >= 7
 		elif self.frequency == "Monthly":
-			return (today - last_date).days >= 30
+			return today.month != last_date.month or today.year != last_date.year
 		elif self.frequency == "One Time":
 			# One time rules should not execute again
 			return False

@@ -139,9 +139,14 @@ def test_sms_rule(rule_name, test_customer=None):
 	customer_doc = frappe.get_doc("Customer", test_customer)
 	
 	try:
-		message = rule.message_template.format(
-			customer_name=customer_doc.customer_name
-		)
+		from frappe.utils.safe_template import safe_render_template
+
+		context = {
+			"customer_name": customer_doc.customer_name,
+			"mobile_no": customer_doc.mobile_no,
+			"today": frappe.utils.today(),
+		}
+		message = safe_render_template(rule.message_template, context)
 		
 		from sms_trigger.sms_trigger.utils.sms_gateway import send_sms
 		result = send_sms(customer_doc.mobile_no, message)

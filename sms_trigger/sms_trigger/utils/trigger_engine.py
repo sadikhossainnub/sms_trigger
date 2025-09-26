@@ -65,11 +65,13 @@ def process_invoice_due(rule):
 		if not existing:
 			try:
 				customer_name = frappe.get_value("Customer", invoice.customer, "customer_name")
-				message = rule.message_template.format(
-					customer_name=customer_name,
-					invoice_no=invoice.name,
-					amount=invoice.outstanding_amount
-				)
+				context = {
+					"customer_name": customer_name,
+					"invoice_no": invoice.name,
+					"amount": invoice.outstanding_amount,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=invoice.customer,
 					message=message,
@@ -101,9 +103,11 @@ def process_birthday(rule):
 		
 		if not existing:
 			try:
-				message = rule.message_template.format(
-					customer_name=customer.customer_name
-				)
+				context = {
+					"customer_name": customer.customer_name,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=customer.name,
 					message=message,
@@ -123,8 +127,13 @@ def process_inactive_customer(rule):
 		LEFT JOIN `tabSales Invoice` si ON si.customer = c.name AND si.docstatus = 1
 		WHERE c.mobile_no IS NOT NULL
 		AND c.mobile_no != ''
-		AND (si.posting_date IS NULL OR si.posting_date < %s)
-		GROUP BY c.name
+		AND NOT EXISTS (
+		          SELECT 1
+		          FROM `tabSales Invoice` si
+		          WHERE si.customer = c.name
+		          AND si.docstatus = 1
+		          AND si.posting_date >= %s
+		      )
 	""", (cutoff_date,), as_dict=True)
 	
 	for customer in customers:
@@ -136,9 +145,11 @@ def process_inactive_customer(rule):
 		
 		if not existing:
 			try:
-				message = rule.message_template.format(
-					customer_name=customer.customer_name
-				)
+				context = {
+					"customer_name": customer.customer_name,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=customer.name,
 					message=message,
@@ -150,9 +161,12 @@ def process_inactive_customer(rule):
 def process_repurchase_promotion(rule):
 	"""Process repurchase promotion"""
 	try:
-		conditions = json.loads(rule.conditions or "{}")
+		conditions = json.loads(rule.conditions)
+		if not isinstance(conditions, dict):
+			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
+			return
 	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON in rule {rule.name}", "SMS Trigger Error")
+		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
 		return
 	
 	item_code = conditions.get("item_code")
@@ -183,10 +197,12 @@ def process_repurchase_promotion(rule):
 		
 		if not existing:
 			try:
-				message = rule.message_template.format(
-					customer_name=customer.customer_name,
-					item_code=item_code
-				)
+				context = {
+					"customer_name": customer.customer_name,
+					"item_code": item_code,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=customer.customer,
 					message=message,
@@ -198,9 +214,12 @@ def process_repurchase_promotion(rule):
 def process_customer_type(rule):
 	"""Process customer type based triggers"""
 	try:
-		conditions = json.loads(rule.conditions or "{}")
+		conditions = json.loads(rule.conditions)
+		if not isinstance(conditions, dict):
+			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
+			return
 	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON in rule {rule.name}", "SMS Trigger Error")
+		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
 		return
 	
 	customer_type = conditions.get("customer_type")
@@ -212,7 +231,7 @@ def process_customer_type(rule):
 	
 	# Add additional filters from conditions
 	for key, value in conditions.items():
-		if key != "customer_type" and hasattr(frappe.get_meta("Customer"), key):
+		if key != "customer_type" and frappe.get_meta("Customer").has_field(key):
 			filters[key] = value
 	
 	customers = frappe.get_all("Customer", 
@@ -229,9 +248,11 @@ def process_customer_type(rule):
 		
 		if not existing:
 			try:
-				message = rule.message_template.format(
-					customer_name=customer.customer_name
-				)
+				context = {
+					"customer_name": customer.customer_name,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=customer.name,
 					message=message,
@@ -243,9 +264,12 @@ def process_customer_type(rule):
 def process_customer_group(rule):
 	"""Process customer group based triggers"""
 	try:
-		conditions = json.loads(rule.conditions or "{}")
+		conditions = json.loads(rule.conditions)
+		if not isinstance(conditions, dict):
+			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
+			return
 	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON in rule {rule.name}", "SMS Trigger Error")
+		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
 		return
 	
 	customer_group = conditions.get("customer_group")
@@ -257,7 +281,7 @@ def process_customer_group(rule):
 	
 	# Add additional filters from conditions
 	for key, value in conditions.items():
-		if key != "customer_group" and hasattr(frappe.get_meta("Customer"), key):
+		if key != "customer_group" and frappe.get_meta("Customer").has_field(key):
 			filters[key] = value
 	
 	customers = frappe.get_all("Customer", 
@@ -274,9 +298,11 @@ def process_customer_group(rule):
 		
 		if not existing:
 			try:
-				message = rule.message_template.format(
-					customer_name=customer.customer_name
-				)
+				context = {
+					"customer_name": customer.customer_name,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
 				create_scheduled_sms(
 					customer=customer.name,
 					message=message,
@@ -314,6 +340,10 @@ def send_pending_sms():
 			doc = frappe.get_doc("Scheduled SMS", sms.name)
 			# Only send if still Draft (double-check to prevent race conditions)
 			if doc.status == "Draft":
-				doc.send_sms()
+				result = doc.send_sms() # Assuming send_sms updates doc status
+				if not result.get("success"):
+					# Implement retry logic here, update retry_count
+					# If max retries reached, update status to "Failed"
+					frappe.log_error(f"Failed to send SMS {sms.name} after retries", "SMS Send Error")
 		except Exception as e:
 			frappe.log_error(f"Error sending SMS {sms.name}: {str(e)}", "SMS Send Error")
