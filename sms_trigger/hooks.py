@@ -88,7 +88,7 @@ after_install = "sms_trigger.sms_trigger.install.after_install"
 # Fixtures
 # --------
 
-fixtures = ["SMS Trigger Rule"]
+# fixtures = ["SMS Trigger Rule"]
 
 # Uninstallation
 # ------------

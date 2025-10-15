@@ -378,4 +378,103 @@ def cleanup_old_logs():
 		""", (cutoff_date,))
 		frappe.db.commit()
 	except Exception as e:
+		frappe.log_error(f"Error in cleanup_old_logs: {str(e)}", "SMS Cleanup Error")er_group:
+		return
+	
+	# Build dynamic filters from conditions
+	filters = {"customer_group": customer_group, "mobile_no": ["!=", ""], "sms_enabled": ["!=", 0]}
+	
+	# Add additional filters from conditions
+	for key, value in conditions.items():
+		if key != "customer_group" and frappe.get_meta("Customer").has_field(key):
+			filters[key] = value
+	
+	customers = frappe.get_all("Customer", 
+		filters=filters,
+		fields=["name", "customer_name", "mobile_no"]
+	)
+	
+	for customer in customers:
+		existing = frappe.db.exists("Scheduled SMS", {
+			"customer": customer.name,
+			"trigger_type": "Customer Group",
+			"scheduled_datetime": [">=", add_days(getdate(), -30)]
+		})
+		
+		if not existing:
+			try:
+				context = {
+					"customer_name": customer.customer_name,
+					"today": frappe.utils.today(),
+				}
+				message = frappe.render_template(rule.message_template, context)
+				create_scheduled_sms(
+					customer=customer.name,
+					message=message,
+					trigger_type="Customer Group"
+				)
+			except Exception as e:
+				frappe.log_error(f"Error formatting message for customer {customer.name}: {str(e)}", "SMS Trigger Error")
+
+def create_scheduled_sms(customer, message, trigger_type, reference_doctype=None, reference_name=None, scheduled_datetime=None):
+	"""Create scheduled SMS entry"""
+	try:
+		if not scheduled_datetime:
+			scheduled_datetime = now_datetime()
+		
+		# Validate customer has mobile number
+		mobile_no = frappe.get_value("Customer", customer, "mobile_no")
+		if not mobile_no:
+			frappe.log_error(f"Customer {customer} has no mobile number", "SMS Trigger Error")
+			return None
+		
+		doc = frappe.get_doc({
+			"doctype": "Scheduled SMS",
+			"customer": customer,
+			"mobile_no": mobile_no,
+			"message": message,
+			"trigger_type": trigger_type,
+			"scheduled_datetime": scheduled_datetime,
+			"reference_doctype": reference_doctype,
+			"reference_name": reference_name
+		})
+		doc.insert(ignore_permissions=True)
+		return doc
+	except Exception as e:
+		frappe.log_error(f"Error creating scheduled SMS for customer {customer}: {str(e)}", "SMS Trigger Error")
+		return None
+
+def send_pending_sms():
+	"""Send pending SMS messages"""
+	try:
+		pending_sms = frappe.get_all("Scheduled SMS", 
+			filters={
+				"status": "Draft",
+				"scheduled_datetime": ["<=", now_datetime()]
+			},
+			fields=["name"],
+			limit=100  # Process in batches
+		)
+		
+		for sms_data in pending_sms:
+			try:
+				sms = frappe.get_doc("Scheduled SMS", sms_data.name)
+				sms.send_sms()
+			except Exception as e:
+				frappe.log_error(f"Error sending SMS {sms_data.name}: {str(e)}", "SMS Send Error")
+	except Exception as e:
+		frappe.log_error(f"Error in send_pending_sms: {str(e)}", "SMS Send Error")
+
+def cleanup_old_logs():
+	"""Cleanup old SMS logs to prevent database bloat"""
+	try:
+		# Delete SMS logs older than 90 days
+		cutoff_date = add_days(getdate(), -90)
+		frappe.db.sql("""
+			DELETE FROM `tabScheduled SMS` 
+			WHERE status IN ('Sent', 'Failed') 
+			AND DATE(scheduled_datetime) < %s
+		""", (cutoff_date,))
+		frappe.db.commit()
+	except Exception as e:
 		frappe.log_error(f"Error in cleanup_old_logs: {str(e)}", "SMS Cleanup Error")
