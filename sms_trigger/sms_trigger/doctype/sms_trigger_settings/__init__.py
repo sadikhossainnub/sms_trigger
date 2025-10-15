@@ -1,0 +1,1 @@
+# SMS Settings DocType

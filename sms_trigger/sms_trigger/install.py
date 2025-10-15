@@ -67,6 +67,13 @@ def setup_default_sms_rules():
 			"days_interval": 90,
 			"message_template": "Hi {{ customer_name }}, we miss you! It's been a while since your last purchase. Check out our latest offers and come back soon!",
 			"is_active": 0
+		},
+		{
+			"rule_name": "POS Invoice Receipt",
+			"trigger_type": "POS Invoice",
+			"frequency": "One Time",
+			"message_template": "Thank you {{ customer_name }}! Your purchase receipt {{ invoice_no }} for {{ amount }} has been processed. Visit us again!",
+			"is_active": 1
 		}
 	]
 	

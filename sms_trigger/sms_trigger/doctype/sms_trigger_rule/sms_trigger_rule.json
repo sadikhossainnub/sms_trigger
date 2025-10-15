@@ -35,7 +35,7 @@
    "fieldname": "trigger_type",
    "fieldtype": "Select",
    "label": "Trigger Type",
-   "options": "Invoice Due\nBirthday\nFollow-up\nCustomer Type\nItem Wise\nCustomer Group\nCustomer Gender\nCustomer Religion\nInactive Customer\nRepurchase Promotion\nCustom",
+   "options": "Invoice Due\nBirthday\nFollow-up\nCustomer Type\nItem Wise\nCustomer Group\nCustomer Gender\nCustomer Religion\nInactive Customer\nRepurchase Promotion\nPOS Invoice\nCustom",
    "reqd": 1
   },
   {
