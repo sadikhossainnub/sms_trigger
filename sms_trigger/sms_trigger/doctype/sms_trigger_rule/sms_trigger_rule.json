@@ -18,7 +18,10 @@
   "message_template",
   "section_break_11",
   "last_execution",
-  "execution_count"
+  "execution_count",
+  "column_break_12",
+  "error_count",
+  "last_error"
  ],
  "fields": [
   {
@@ -95,6 +98,23 @@
    "fieldname": "execution_count",
    "fieldtype": "Int",
    "label": "Execution Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "error_count",
+   "fieldtype": "Int",
+   "label": "Error Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_error",
+   "fieldtype": "Datetime",
+   "label": "Last Error",
    "read_only": 1
   }
  ],

@@ -1,9 +1,15 @@
 import frappe
+from frappe.utils import today
 
 def after_install():
 	"""Setup SMS Trigger app after installation"""
-	create_custom_fields()
-	setup_notification_templates()
+	try:
+		create_custom_fields()
+		setup_default_sms_rules()
+		setup_workspace()
+		frappe.msgprint("SMS Trigger app installed successfully!", indicator="green")
+	except Exception as e:
+		frappe.log_error(f"Error during SMS Trigger installation: {str(e)}", "SMS Trigger Install Error")
 
 def create_custom_fields():
 	"""Create custom fields for SMS integration"""
@@ -16,30 +22,85 @@ def create_custom_fields():
 			"label": "SMS Enabled",
 			"fieldtype": "Check",
 			"default": "1",
-			"insert_after": "mobile_no"
-		}).insert()
+			"insert_after": "mobile_no",
+			"description": "Enable/disable SMS notifications for this customer"
+		}).insert(ignore_permissions=True)
+	
+	# Add date of birth field if not exists
+	if not frappe.db.exists("Custom Field", {"dt": "Customer", "fieldname": "date_of_birth"}):
+		frappe.get_doc({
+			"doctype": "Custom Field",
+			"dt": "Customer",
+			"fieldname": "date_of_birth",
+			"label": "Date of Birth",
+			"fieldtype": "Date",
+			"insert_after": "sms_enabled",
+			"description": "Customer's date of birth for birthday SMS triggers"
+		}).insert(ignore_permissions=True)
 
-def setup_notification_templates():
-	"""Setup default notification templates"""
-	templates = [
+def setup_default_sms_rules():
+	"""Setup default SMS trigger rules"""
+	default_rules = [
 		{
-			"name": "Invoice Due SMS",
-			"subject": "Invoice Due Reminder",
-			"document_type": "Sales Invoice",
-			"event": "Days After",
-			"date_changed": "due_date",
-			"days_in_advance": -7,
-			"condition": "doc.outstanding_amount > 0",
-			"message": "Dear {{ doc.customer_name }}, your invoice {{ doc.name }} for {{ doc.grand_total }} is overdue. Please make payment."
+			"rule_name": "Invoice Due Reminder",
+			"trigger_type": "Invoice Due",
+			"frequency": "Daily",
+			"days_interval": 7,
+			"message_template": "Dear {{ customer_name }}, your invoice {{ invoice_no }} for {{ amount }} is overdue. Please make payment at your earliest convenience.",
+			"is_active": 1
+		},
+		{
+			"rule_name": "Birthday Wishes",
+			"trigger_type": "Birthday",
+			"frequency": "Daily",
+			"message_template": "Happy Birthday {{ customer_name }}! Wishing you a wonderful day filled with joy and happiness. Thank you for being our valued customer!",
+			"is_active": 1
+		},
+		{
+			"rule_name": "Inactive Customer Follow-up",
+			"trigger_type": "Inactive Customer",
+			"frequency": "Monthly",
+			"days_interval": 90,
+			"message_template": "Hi {{ customer_name }}, we miss you! It's been a while since your last purchase. Check out our latest offers and come back soon!",
+			"is_active": 0
 		}
 	]
 	
-	for template in templates:
-		if not frappe.db.exists("Notification", template["name"]):
+	for rule_data in default_rules:
+		if not frappe.db.exists("SMS Trigger Rule", {"rule_name": rule_data["rule_name"]}):
 			doc = frappe.get_doc({
-				"doctype": "Notification",
-				**template,
-				"enabled": 1,
-				"channel": "SMS"
+				"doctype": "SMS Trigger Rule",
+				**rule_data
 			})
-			doc.insert()
+			doc.insert(ignore_permissions=True)
+
+def setup_workspace():
+	"""Setup SMS workspace if it doesn't exist"""
+	if not frappe.db.exists("Workspace", "SMS"):
+		workspace = frappe.get_doc({
+			"doctype": "Workspace",
+			"title": "SMS",
+			"name": "SMS",
+			"icon": "message-square",
+			"indicator_color": "blue",
+			"is_standard": 1,
+			"module": "SMS Trigger",
+			"shortcuts": [
+				{
+					"type": "DocType",
+					"label": "SMS Trigger Rule",
+					"doc_view": "List"
+				},
+				{
+					"type": "DocType",
+					"label": "Scheduled SMS",
+					"doc_view": "List"
+				},
+				{
+					"type": "DocType",
+					"label": "Bulk SMS",
+					"doc_view": "List"
+				}
+			]
+		})
+		workspace.insert(ignore_permissions=True)

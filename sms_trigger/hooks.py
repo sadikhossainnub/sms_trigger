@@ -161,7 +161,10 @@ scheduler_events = {
 		"*/10 * * * *": [
 			"sms_trigger.sms_trigger.utils.trigger_engine.send_pending_sms"
 		]
-	}
+	},
+	"hourly": [
+		"sms_trigger.sms_trigger.utils.trigger_engine.cleanup_old_logs"
+	]
 }
 
 # Testing
