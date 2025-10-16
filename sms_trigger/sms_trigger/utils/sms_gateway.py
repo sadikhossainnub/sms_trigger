@@ -29,8 +29,15 @@ def send_sms(mobile_no, message, max_retries=3, retry_delay=5):
 	for attempt in range(max_retries):
 		try:
 			from frappe.core.doctype.sms_settings.sms_settings import send_sms as frappe_send_sms
+			
+			# Check if SMS settings are configured
+			sms_settings = frappe.get_single("SMS Settings")
+			if not sms_settings.sms_gateway_url:
+				return {"success": False, "error": "SMS Gateway not configured in SMS Settings"}
+			
 			frappe_send_sms([mobile_no], cstr(message), success_msg=False)
 			update_rate_limit(mobile_no)
+			frappe.log_info(f"SMS sent successfully to {mobile_no}", "SMS Gateway")
 			return {"success": True, "message": "SMS sent successfully"}
 			
 		except requests.exceptions.RequestException as e:
@@ -45,6 +52,7 @@ def send_sms(mobile_no, message, max_retries=3, retry_delay=5):
 			error_msg = str(e)
 			frappe.log_error(f"SMS sending failed: {error_msg}", "SMS Gateway Error")
 			return {"success": False, "error": error_msg}
+	frappe.log_error("SMS sending failed with unknown error", "SMS Gateway Error")
 	return {"success": False, "error": "Unknown error during SMS sending"}
 
 def clean_mobile_number(mobile_no):

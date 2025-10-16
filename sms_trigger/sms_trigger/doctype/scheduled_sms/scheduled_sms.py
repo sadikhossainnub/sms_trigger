@@ -10,7 +10,7 @@ class ScheduledSMS(Document):
 	
 	def on_submit(self):
 		"""Send SMS when document is submitted"""
-		self.send_sms()
+		pass  # SMS will be sent by scheduler
 	
 	def send_sms(self):
 		# Prevent duplicate sends - only send if status is Draft and submitted
@@ -28,11 +28,11 @@ class ScheduledSMS(Document):
 				self.status = "Failed"
 				self.error_message = result.get("error", "Unknown error")
 			
-			self.save()
+			self.save(ignore_permissions=True, ignore_version=True)
 			return result
 			
 		except Exception as e:
 			self.status = "Failed"
 			self.error_message = str(e)
-			self.save()
+			self.save(ignore_permissions=True, ignore_version=True)
 			return {"success": False, "error": str(e)}

@@ -147,14 +147,14 @@ class BulkSMS(Document):
 		
 		self.success_count = success_count
 		self.failed_count = failed_count
-		self.save(ignore_version=True)
+		self.save(ignore_version=True, ignore_permissions=True)
 
 def process_bulk_sms(bulk_sms_name):
 	"""Background job to process bulk SMS"""
 	doc = frappe.get_doc("Bulk SMS", bulk_sms_name)
 	doc.reload()
 	doc.status = "Sending"
-	doc.save(ignore_version=True)
+	doc.save(ignore_version=True, ignore_permissions=True)
 	
 	# Update queue log
 	update_sms_queue_log(bulk_sms_name, "Processing", started_datetime=now_datetime())
@@ -223,9 +223,10 @@ def process_bulk_sms(bulk_sms_name):
 				)
 	
 	# Update counts and save
+	doc.reload()
 	doc.update_counts()
 	doc.status = "Completed" if failed_count == 0 else "Failed"
-	doc.save(ignore_version=True)
+	doc.save(ignore_version=True, ignore_permissions=True)
 	
 	# Update final queue log
 	update_sms_queue_log(

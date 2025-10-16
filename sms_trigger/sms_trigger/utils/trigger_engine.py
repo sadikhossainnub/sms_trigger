@@ -333,6 +333,7 @@ def create_scheduled_sms(customer, message, trigger_type, reference_doctype=None
 		})
 		doc.insert(ignore_permissions=True)
 		doc.submit()
+		frappe.db.commit()
 		return doc
 	except Exception as e:
 		frappe.log_error(f"Error creating scheduled SMS for customer {customer}: {str(e)}", "SMS Trigger Error")
@@ -344,6 +345,7 @@ def send_pending_sms():
 		pending_sms = frappe.get_all("Scheduled SMS", 
 			filters={
 				"status": "Draft",
+				"docstatus": 1,
 				"scheduled_datetime": ["<=", now_datetime()]
 			},
 			fields=["name"],
@@ -353,9 +355,29 @@ def send_pending_sms():
 		for sms_data in pending_sms:
 			try:
 				sms = frappe.get_doc("Scheduled SMS", sms_data.name)
-				sms.send_sms()
+				result = sms.send_sms()
+				
+				# Reload and commit to ensure status is saved
+				sms.reload()
+				frappe.db.commit()
+				
+				if result.get("success"):
+					frappe.log_info(f"SMS {sms_data.name} sent successfully", "SMS Send")
+				else:
+					frappe.log_error(f"SMS {sms_data.name} failed: {result.get('error')}", "SMS Send Error")
+					
 			except Exception as e:
 				frappe.log_error(f"Error sending SMS {sms_data.name}: {str(e)}", "SMS Send Error")
+				# Try to mark as failed
+				try:
+					sms = frappe.get_doc("Scheduled SMS", sms_data.name)
+					sms.status = "Failed"
+					sms.error_message = str(e)
+					sms.save(ignore_permissions=True, ignore_version=True)
+					frappe.db.commit()
+				except:
+					pass
+					
 	except Exception as e:
 		frappe.log_error(f"Error in send_pending_sms: {str(e)}", "SMS Send Error")
 
