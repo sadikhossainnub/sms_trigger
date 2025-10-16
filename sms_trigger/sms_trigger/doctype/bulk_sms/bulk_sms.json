@@ -86,7 +86,7 @@
    "fieldname": "religion",
    "fieldtype": "Select",
    "label": "Religion",
-   "options": "Hindu\nChristian\nMuslim\nBuddha"
+   "options": "Muslim\nHindu\nChristian\nBuddhist\nOther"
   },
   {
    "depends_on": "eval:doc.filter_by=='Profession'",
