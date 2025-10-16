@@ -21,13 +21,18 @@ class BulkSMS(Document):
 			frappe.throw("Message cannot exceed 1600 characters")
 	
 	def before_save(self):
-		self.load_recipients()
+		# Only auto-load if no manual recipients exist
+		if not self.recipients and self.filter_by:
+			self.load_recipients()
+		# Update total count
+		self.total_recipients = len(self.recipients)
 	
 	@frappe.whitelist()
 	def load_recipients(self):
 		"""Load recipients based on filter criteria"""
 		customers = self.get_filtered_customers()
 		
+		# Clear existing recipients only when explicitly loading
 		self.recipients = []
 		for customer in customers:
 			if customer.mobile_no:
