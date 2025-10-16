@@ -45,9 +45,9 @@
   },
   {
    "fieldname": "pos_customer_types",
-   "fieldtype": "Table MultiSelect",
-   "label": "Customer Types",
-   "options": "Customer Type"
+   "fieldtype": "Small Text",
+   "label": "Customer Types (comma separated)",
+   "description": "Enter customer types separated by commas, e.g: Individual, Company"
   },
   {
    "fieldname": "section_break_6",

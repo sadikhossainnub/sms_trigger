@@ -25,7 +25,7 @@ def send_pos_invoice_sms(doc, method):
 		
 		# Check customer type filter
 		if sms_settings.pos_customer_types:
-			allowed_types = [row.customer_type for row in sms_settings.pos_customer_types]
+			allowed_types = [t.strip() for t in sms_settings.pos_customer_types.split(',') if t.strip()]
 			if customer.customer_type not in allowed_types:
 				return
 		
