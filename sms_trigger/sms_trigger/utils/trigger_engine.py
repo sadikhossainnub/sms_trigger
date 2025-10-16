@@ -6,7 +6,7 @@ def process_sms_triggers():
 	"""Main function to process all SMS trigger rules"""
 	try:
 		rules = frappe.get_all("SMS Trigger Rule", 
-			filters={"is_active": 1}, 
+			filters={"is_active": 1, "docstatus": 1}, 
 			fields=["name", "trigger_type", "conditions", "message_template", "days_interval", "frequency"]
 		)
 		
@@ -332,6 +332,7 @@ def create_scheduled_sms(customer, message, trigger_type, reference_doctype=None
 			"reference_name": reference_name
 		})
 		doc.insert(ignore_permissions=True)
+		doc.submit()
 		return doc
 	except Exception as e:
 		frappe.log_error(f"Error creating scheduled SMS for customer {customer}: {str(e)}", "SMS Trigger Error")

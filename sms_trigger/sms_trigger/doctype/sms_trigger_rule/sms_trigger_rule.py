@@ -20,21 +20,33 @@ class SMSTriggerRule(Document):
 		if self.frequency in ["Weekly", "Monthly"] and not self.days_interval:
 			frappe.throw(f"Days interval is required for frequency '{self.frequency}'", title="Validation Error", fieldname="days_interval")
 	
+	def on_submit(self):
+		"""Activate rule when submitted"""
+		self.is_active = 1
+	
+	def on_cancel(self):
+		"""Deactivate rule when cancelled"""
+		self.is_active = 0
+	
 	def enable_rule(self):
 		"""Enable the SMS trigger rule"""
+		if self.docstatus != 1:
+			frappe.throw("Rule must be submitted to enable")
 		self.is_active = 1
 		self.save()
 		frappe.msgprint(f"SMS Trigger Rule '{self.rule_name}' has been enabled")
 	
 	def disable_rule(self):
 		"""Disable the SMS trigger rule"""
+		if self.docstatus != 1:
+			frappe.throw("Rule must be submitted to disable")
 		self.is_active = 0
 		self.save()
 		frappe.msgprint(f"SMS Trigger Rule '{self.rule_name}' has been disabled")
 	
 	def can_execute(self):
 		"""Check if rule can be executed based on frequency and last execution"""
-		if not self.is_active:
+		if self.docstatus != 1 or not self.is_active:
 			return False
 		
 		from frappe.utils import getdate, get_datetime

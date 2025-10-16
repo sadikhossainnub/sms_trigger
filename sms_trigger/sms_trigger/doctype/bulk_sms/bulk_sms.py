@@ -11,8 +11,14 @@ class BulkSMS(Document):
 		if self.custom_filter:
 			try:
 				json.loads(self.custom_filter)
-			except:
+			except json.JSONDecodeError:
 				frappe.throw("Invalid JSON format in custom filter")
+		
+		if not self.message:
+			frappe.throw("Message is required")
+		
+		if len(self.message) > 1600:
+			frappe.throw("Message cannot exceed 1600 characters")
 	
 	def before_save(self):
 		self.load_recipients()
@@ -34,9 +40,17 @@ class BulkSMS(Document):
 		
 		self.total_recipients = len(self.recipients)
 	
+
+	
 	def get_filtered_customers(self):
 		"""Get customers based on filter criteria"""
-		filters = {"mobile_no": ["!=", ""]}
+		if not self.filter_by:
+			return []  # Manual selection - no auto-load
+		
+		if self.filter_by == "All Customers":
+			pass  # Use base filters only
+		
+		filters = {"mobile_no": ["!=", ""], "sms_enabled": ["!=", 0]}
 		
 		if self.filter_by == "Customer Group" and self.customer_group:
 			filters["customer_group"] = self.customer_group
@@ -49,19 +63,26 @@ class BulkSMS(Document):
 		elif self.filter_by == "Profession" and self.profession:
 			filters["profession"] = self.profession
 		elif self.filter_by == "Custom Filter" and self.custom_filter:
-			custom_filters = json.loads(self.custom_filter)
-			filters.update(custom_filters)
+			try:
+				custom_filters = json.loads(self.custom_filter)
+				filters.update(custom_filters)
+			except json.JSONDecodeError:
+				frappe.throw("Invalid JSON format in custom filter")
 		
 		return frappe.get_all("Customer", 
 			filters=filters,
 			fields=["name", "customer_name", "mobile_no"]
 		)
 	
+	def on_submit(self):
+		"""Auto-send SMS when document is submitted"""
+		self.send_bulk_sms()
+	
 	@frappe.whitelist()
 	def send_bulk_sms(self):
 		"""Send bulk SMS to all recipients"""
-		if self.status != "Draft":
-			frappe.throw("Can only send SMS from Draft status")
+		if self.docstatus != 1:
+			frappe.throw("Document must be submitted to send SMS")
 		
 		self.status = "Queued"
 		self.save()
@@ -82,8 +103,8 @@ class BulkSMS(Document):
 	@frappe.whitelist()
 	def retry_failed_sms(self):
 		"""Retry sending failed SMS"""
-		if self.status not in ["Failed", "Completed"]:
-			frappe.throw("Can only retry from Failed or Completed status")
+		if self.docstatus != 1 or self.status not in ["Failed", "Completed"]:
+			frappe.throw("Can only retry from Failed or Completed status on submitted document")
 		
 		# Reset failed recipients to pending
 		failed_count = 0
@@ -122,6 +143,7 @@ class BulkSMS(Document):
 		
 		self.success_count = success_count
 		self.failed_count = failed_count
+		self.save(ignore_version=True)
 
 def process_bulk_sms(bulk_sms_name):
 	"""Background job to process bulk SMS"""
@@ -165,10 +187,9 @@ def process_bulk_sms(bulk_sms_name):
 			
 			processed_count += 1
 			
-			# Save progress every 10 SMS
-			if processed_count % 10 == 0:
+			# Save progress every 3 SMS
+			if processed_count % 3 == 0:
 				doc.update_counts()
-				doc.save(ignore_version=True)
 				frappe.publish_realtime(
 					"bulk_sms_progress",
 					{"processed": processed_count, "success": success_count, "failed": failed_count},
@@ -188,10 +209,9 @@ def process_bulk_sms(bulk_sms_name):
 			# Create log entry
 			create_bulk_sms_log(doc, recipient)
 			
-			# Save progress every 10 SMS
-			if processed_count % 10 == 0:
+			# Save progress every 3 SMS
+			if processed_count % 3 == 0:
 				doc.update_counts()
-				doc.save(ignore_version=True)
 				frappe.publish_realtime(
 					"bulk_sms_progress",
 					{"processed": processed_count, "success": success_count, "failed": failed_count},

@@ -56,8 +56,8 @@ def send_pos_invoice_sms(doc, method):
 		})
 		sms_doc.insert(ignore_permissions=True)
 		
-		# Send immediately
-		sms_doc.send_sms()
+		# Submit to send immediately
+		sms_doc.submit()
 		
 	except Exception as e:
 		frappe.log_error(f"Error sending POS Invoice SMS for {doc.name}: {str(e)}", "POS SMS Error")

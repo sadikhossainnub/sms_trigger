@@ -8,10 +8,14 @@ class ScheduledSMS(Document):
 			customer = frappe.get_doc("Customer", self.customer)
 			self.mobile_no = customer.mobile_no
 	
+	def on_submit(self):
+		"""Send SMS when document is submitted"""
+		self.send_sms()
+	
 	def send_sms(self):
-		# Prevent duplicate sends - only send if status is Draft
-		if self.status != "Draft":
-			return {"success": False, "error": "SMS already processed"}
+		# Prevent duplicate sends - only send if status is Draft and submitted
+		if self.docstatus != 1 or self.status != "Draft":
+			return {"success": False, "error": "SMS already processed or not submitted"}
 		
 		try:
 			from sms_trigger.sms_trigger.utils.sms_gateway import send_sms
