@@ -27,6 +27,7 @@
   "success_count",
   "failed_count",
   "section_break_17",
+  "send_sms_button",
   "recipients"
  ],
  "fields": [
@@ -158,6 +159,12 @@
    "fieldname": "section_break_17",
    "fieldtype": "Section Break",
    "label": "Recipients"
+  },
+  {
+   "depends_on": "eval:doc.docstatus==0 && doc.total_recipients>0",
+   "fieldname": "send_sms_button",
+   "fieldtype": "Button",
+   "label": "Sent"
   },
   {
    "fieldname": "recipients",

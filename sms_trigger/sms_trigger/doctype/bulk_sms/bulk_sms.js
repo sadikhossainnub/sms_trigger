@@ -10,6 +10,12 @@ frappe.ui.form.on('Bulk SMS', {
 			frm.add_custom_button(__('Load Recipients'), function() {
 				frm.call('load_recipients');
 			});
+			
+			if (frm.doc.total_recipients > 0) {
+				frm.add_custom_button(__('Sent'), function() {
+					frm.submit();
+				}).addClass('btn-primary');
+			}
 		}
 	},
 	
