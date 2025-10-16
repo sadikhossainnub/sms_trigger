@@ -19,7 +19,6 @@
   "profession",
   "custom_filter",
   "section_break_11",
-  "send_immediately",
   "scheduled_datetime",
   "column_break_14",
   "status",
@@ -109,13 +108,6 @@
    "label": "Schedule"
   },
   {
-   "default": "1",
-   "fieldname": "send_immediately",
-   "fieldtype": "Check",
-   "label": "Send Immediately"
-  },
-  {
-   "depends_on": "eval:!doc.send_immediately",
    "fieldname": "scheduled_datetime",
    "fieldtype": "Datetime",
    "label": "Scheduled Date & Time"

@@ -5,8 +5,7 @@ import json
 
 class BulkSMS(Document):
 	def validate(self):
-		if not self.send_immediately and not self.scheduled_datetime:
-			frappe.throw("Please set scheduled date time or check send immediately")
+		pass  # Remove send_immediately validation
 		
 		if self.custom_filter:
 			try:
