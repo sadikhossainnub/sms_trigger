@@ -1,49 +1,51 @@
 frappe.ui.form.on('SMS Trigger Rule', {
-	refresh: function(frm) {
+	refresh: function (frm) {
 		// Add custom buttons
 		if (!frm.doc.__islocal) {
 			// Toggle button
 			if (frm.doc.is_active) {
-				frm.add_custom_button(__('Disable Rule'), function() {
+				frm.add_custom_button(__('Disable Rule'), function () {
 					disable_rule(frm);
 				}, __('Actions'));
 			} else {
-				frm.add_custom_button(__('Enable Rule'), function() {
+				frm.add_custom_button(__('Enable Rule'), function () {
 					enable_rule(frm);
 				}, __('Actions'));
 			}
-			
+
 			// Test rule button
-			frm.add_custom_button(__('Test Rule'), function() {
+			frm.add_custom_button(__('Test Rule'), function () {
 				test_rule(frm);
 			}, __('Actions'));
-			
+
 			// Validate conditions button
 			if (frm.doc.conditions) {
-				frm.add_custom_button(__('Validate Conditions'), function() {
+				frm.add_custom_button(__('Validate Conditions'), function () {
 					validate_conditions(frm);
 				}, __('Actions'));
 			}
 		}
-		
+
 		// Set field descriptions
-		frm.set_df_property('conditions', 'description', 
+		frm.set_df_property('conditions', 'description',
 			'Enter JSON conditions. Example: {"customer_type": "Individual", "customer_group": "All Customer Groups"}');
-		frm.set_df_property('frequency', 'description', 
+		frm.set_df_property('frequency', 'description',
 			'How often this rule should run. One Time rules run only once per customer.');
-		frm.set_df_property('days_interval', 'description', 
+		frm.set_df_property('days_interval', 'description',
 			'For Invoice Due: days overdue. For Inactive Customer: days since last purchase. For Repurchase: days since last purchase of item.');
+
+		frm.trigger('show_available_variables');
 	},
-	
-	trigger_type: function(frm) {
+
+	trigger_type: function (frm) {
 		// Set default conditions based on trigger type
-		if (frm.doc.trigger_type && !frm.doc.conditions) {
+		if (frm.doc.trigger_type && !frm.doc.conditions && frm.doc.use_json) {
 			let default_conditions = get_default_conditions(frm.doc.trigger_type);
 			if (default_conditions) {
 				frm.set_value('conditions', JSON.stringify(default_conditions, null, 2));
 			}
 		}
-		
+
 		// Set default message template
 		if (frm.doc.trigger_type && !frm.doc.message_template) {
 			let default_message = get_default_message(frm.doc.trigger_type);
@@ -51,11 +53,13 @@ frappe.ui.form.on('SMS Trigger Rule', {
 				frm.set_value('message_template', default_message);
 			}
 		}
+
+		frm.trigger('show_available_variables');
 	},
-	
-	conditions: function(frm) {
+
+	conditions: function (frm) {
 		// Validate JSON on change
-		if (frm.doc.conditions) {
+		if (frm.doc.conditions && frm.doc.use_json) {
 			try {
 				JSON.parse(frm.doc.conditions);
 				frm.set_df_property('conditions', 'description', 'Valid JSON conditions');
@@ -63,7 +67,27 @@ frappe.ui.form.on('SMS Trigger Rule', {
 				frm.set_df_property('conditions', 'description', 'Invalid JSON: ' + e.message);
 			}
 		}
-	}
+	},
+
+	show_available_variables: function (frm) {
+		if (!frm.doc.trigger_type) return;
+
+		const vars = get_available_variables(frm.doc.trigger_type);
+		let html = '<div class="text-muted small">';
+		if (vars && vars.length > 0) {
+			html += '<strong>Available Variables:</strong><br>';
+			html += '<ul>';
+			vars.forEach(v => {
+				html += `<li><code>{{ ${v.name} }}</code> - ${v.description}</li>`;
+			});
+			html += '</ul>';
+		} else {
+			html += 'Select a trigger type to see available variables.';
+		}
+		html += '</div>';
+
+		frm.set_df_property('available_variables', 'options', html);
+	},
 });
 
 function enable_rule(frm) {
@@ -72,7 +96,7 @@ function enable_rule(frm) {
 		args: {
 			rule_name: frm.doc.name
 		},
-		callback: function(r) {
+		callback: function (r) {
 			if (r.message && r.message.success) {
 				frappe.msgprint(r.message.message);
 				frm.reload_doc();
@@ -84,13 +108,13 @@ function enable_rule(frm) {
 function disable_rule(frm) {
 	frappe.confirm(
 		'Are you sure you want to disable this SMS rule?',
-		function() {
+		function () {
 			frappe.call({
 				method: 'sms_trigger.sms_trigger.api.disable_sms_rule',
 				args: {
 					rule_name: frm.doc.name
 				},
-				callback: function(r) {
+				callback: function (r) {
 					if (r.message && r.message.success) {
 						frappe.msgprint(r.message.message);
 						frm.reload_doc();
@@ -121,7 +145,7 @@ function test_rule(frm) {
 					rule_name: frm.doc.name,
 					test_customer: values.customer
 				},
-				callback: function(r) {
+				callback: function (r) {
 					if (r.message) {
 						if (r.message.success) {
 							frappe.msgprint(`Test SMS sent successfully to ${r.message.customer} (${r.message.mobile_no})<br>Message: ${r.message.message}`);
@@ -143,7 +167,7 @@ function validate_conditions(frm) {
 		args: {
 			conditions: frm.doc.conditions
 		},
-		callback: function(r) {
+		callback: function (r) {
 			if (r.message) {
 				if (r.message.valid) {
 					frappe.msgprint('Conditions are valid JSON');
@@ -157,9 +181,9 @@ function validate_conditions(frm) {
 
 function get_default_conditions(trigger_type) {
 	const defaults = {
-		'Customer Type': {"customer_type": "Individual"},
-		'Customer Group': {"customer_group": "All Customer Groups"},
-		'Repurchase Promotion': {"item_code": "ITEM-001"}
+		'Customer Type': { "customer_type": "Individual" },
+		'Customer Group': { "customer_group": "All Customer Groups" },
+		'Repurchase Promotion': { "item_code": "ITEM-001" }
 	};
 	return defaults[trigger_type];
 }
@@ -174,4 +198,35 @@ function get_default_message(trigger_type) {
 		'Customer Group': 'Hello {customer_name}, exclusive deals for our valued customers!'
 	};
 	return messages[trigger_type];
+}
+
+function get_available_variables(trigger_type) {
+	const common = [
+		{ name: "customer_name", description: "Full Name of the customer" },
+		{ name: "today", description: "Current Date (YYYY-MM-DD)" }
+	];
+
+	const specific = {
+		'Invoice Due': [
+			{ name: "invoice_no", description: "Invoice Number" },
+			{ name: "amount", description: "Outstanding Amount" },
+			{ name: "due_date", description: "Due Date" }
+		],
+		'Birthday': [
+			{ name: "date_of_birth", description: "Customer's Birth Date" }
+		],
+		'Repurchase Promotion': [
+			{ name: "item_code", description: "Item Code" },
+			{ name: "last_purchase_date", description: "Date of last purchase" }
+		],
+		'Reference Document': [
+			{ name: "doc", description: " The Reference Document Object" }
+		]
+	};
+
+	let vars = [...common];
+	if (specific[trigger_type]) {
+		vars = [...vars, ...specific[trigger_type]];
+	}
+	return vars;
 }

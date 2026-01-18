@@ -8,13 +8,19 @@ class SMSTriggerRule(Document):
 		self.validate_frequency()
 	
 	def validate_conditions(self):
-		if self.conditions:
+		if self.use_json and self.conditions:
 			try:
 				conditions = json.loads(self.conditions)
 				if not isinstance(conditions, dict):
 					frappe.throw("Conditions must be a JSON object")
 			except json.JSONDecodeError:
 				frappe.throw("Invalid JSON format in conditions")
+                
+		if not self.use_json and not self.condition_table and not self.conditions:
+			# If migrating, we might have data in 'conditions' but 'use_json' is 0. 
+			# Ideally we should fallback to JSON if table is empty for backward compatibility, 
+			# but for now let's strict validate based on flag.
+			pass
 	
 	def validate_frequency(self):
 		if self.frequency in ["Weekly", "Monthly"] and not self.days_interval:

@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/sms_trigger/css/sms_trigger.css"
-# app_include_js = "/assets/sms_trigger/js/sms_trigger.js"
+app_include_js = "/assets/sms_trigger/js/pos_otp.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/sms_trigger/css/sms_trigger.css"
@@ -158,6 +158,9 @@ scheduler_events = {
 	"cron": {
 		"*/10 * * * *": [
 			"sms_trigger.sms_trigger.utils.trigger_engine.send_pending_sms"
+		],
+		"0/15 * * * *": [
+			"sms_trigger.sms_trigger.doctype.bulk_sms.bulk_sms.process_scheduled_campaigns"
 		]
 	},
 	"hourly": [

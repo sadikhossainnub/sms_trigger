@@ -1,93 +1,132 @@
 {
- "actions": [],
- "creation": "2024-01-01 00:00:00.000000",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "pos_sms_section",
-  "enable_pos_sms",
-  "pos_sms_template",
-  "column_break_3",
-  "pos_min_amount",
-  "pos_customer_types",
-  "section_break_6",
-  "available_variables",
-  "pos_template_help"
- ],
- "fields": [
-  {
-   "fieldname": "pos_sms_section",
-   "fieldtype": "Section Break",
-   "label": "POS SMS Settings"
-  },
-  {
-   "default": "1",
-   "fieldname": "enable_pos_sms",
-   "fieldtype": "Check",
-   "label": "Enable POS SMS"
-  },
-  {
-   "default": "Thank you {{ customer_name }}! Receipt: {{ invoice_no }} Amount: {{ amount }}. Visit us again!",
-   "fieldname": "pos_sms_template",
-   "fieldtype": "Text",
-   "label": "POS SMS Template",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "pos_min_amount",
-   "fieldtype": "Currency",
-   "label": "Minimum Amount for SMS"
-  },
-  {
-   "fieldname": "pos_customer_types",
-   "fieldtype": "Small Text",
-   "label": "Customer Types (comma separated)",
-   "description": "Enter customer types separated by commas, e.g: Individual, Company"
-  },
-  {
-   "fieldname": "section_break_6",
-   "fieldtype": "Section Break",
-   "label": "Template Variables"
-  },
-  {
-   "fieldname": "available_variables",
-   "fieldtype": "HTML",
-   "label": "Available Variables",
-   "options": "<div class=\"text-muted\"><h6>Available Variables:</h6><ul><li><code>{{ customer_name }}</code> - Customer Name</li><li><code>{{ invoice_no }}</code> - Invoice Number</li><li><code>{{ amount }}</code> - Invoice Amount</li><li><code>{{ date }}</code> - Invoice Date</li><li><code>{{ company }}</code> - Company Name</li><li><code>{{ items }}</code> - Item List</li><li><code>{{ payment_mode }}</code> - Payment Method</li></ul></div>"
-  },
-  {
-   "fieldname": "pos_template_help",
-   "fieldtype": "HTML",
-   "label": "Template Help",
-   "options": "<div class=\"alert alert-info\"><strong>Example Templates:</strong><br><br><code>Dear {{ customer_name }}, thank you for shopping with {{ company }}! Invoice: {{ invoice_no }} Amount: {{ amount }}</code><br><br><code>Receipt {{ invoice_no }} - {{ amount }} paid via {{ payment_mode }}. Thank you {{ customer_name }}!</code></div>"
-  }
- ],
- "index_web_pages_for_search": 1,
- "issingle": 1,
- "links": [],
- "modified": "2024-01-01 00:00:00.000000",
- "modified_by": "Administrator",
- "module": "SMS Trigger",
- "name": "SMS Trigger Settings",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+    "actions": [],
+    "creation": "2024-01-01 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "pos_sms_section",
+        "enable_pos_sms",
+        "pos_sms_template",
+        "column_break_3",
+        "pos_min_amount",
+        "pos_customer_types",
+        "section_otp",
+        "enable_pos_otp",
+        "otp_on_discount_only",
+        "otp_expiry_minutes",
+        "otp_message_template",
+        "section_break_6",
+        "available_variables",
+        "pos_template_help"
+    ],
+    "fields": [
+        {
+            "fieldname": "pos_sms_section",
+            "fieldtype": "Section Break",
+            "label": "POS SMS Settings"
+        },
+        {
+            "default": "1",
+            "fieldname": "enable_pos_sms",
+            "fieldtype": "Check",
+            "label": "Enable POS SMS"
+        },
+        {
+            "default": "Thank you {{ customer_name }}! Receipt: {{ invoice_no }} Amount: {{ amount }}. Visit us again!",
+            "fieldname": "pos_sms_template",
+            "fieldtype": "Text",
+            "label": "POS SMS Template",
+            "reqd": 1
+        },
+        {
+            "fieldname": "column_break_3",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "0",
+            "fieldname": "pos_min_amount",
+            "fieldtype": "Currency",
+            "label": "Minimum Amount for SMS"
+        },
+        {
+            "fieldname": "pos_customer_types",
+            "fieldtype": "Small Text",
+            "label": "Customer Types (comma separated)",
+            "description": "Enter customer types separated by commas, e.g: Individual, Company"
+        },
+        {
+            "fieldname": "section_otp",
+            "fieldtype": "Section Break",
+            "label": "POS OTP Verification"
+        },
+        {
+            "default": "0",
+            "fieldname": "enable_pos_otp",
+            "fieldtype": "Check",
+            "label": "Enable POS OTP Verification"
+        },
+        {
+            "default": "0",
+            "fieldname": "otp_on_discount_only",
+            "fieldtype": "Check",
+            "label": "Require OTP Only on Discount",
+            "description": "If checked, OTP will only be required if the transaction has a discount.",
+            "depends_on": "eval:doc.enable_pos_otp"
+        },
+        {
+            "default": "5",
+            "fieldname": "otp_expiry_minutes",
+            "fieldtype": "Int",
+            "label": "OTP Expiry (Minutes)",
+            "depends_on": "eval:doc.enable_pos_otp"
+        },
+        {
+            "default": "Your OTP for payment is {{ otp }}. Valid for {{ minutes }} minutes.",
+            "fieldname": "otp_message_template",
+            "fieldtype": "Small Text",
+            "label": "OTP Message Template",
+            "reqd": 1,
+            "depends_on": "eval:doc.enable_pos_otp"
+        },
+        {
+            "fieldname": "section_break_6",
+            "fieldtype": "Section Break",
+            "label": "Template Variables"
+        },
+        {
+            "fieldname": "available_variables",
+            "fieldtype": "HTML",
+            "label": "Available Variables",
+            "options": "<div class=\"text-muted\"><h6>Available Variables:</h6><ul><li><code>{{ customer_name }}</code> - Customer Name</li><li><code>{{ invoice_no }}</code> - Invoice Number</li><li><code>{{ amount }}</code> - Invoice Amount</li><li><code>{{ date }}</code> - Invoice Date</li><li><code>{{ company }}</code> - Company Name</li><li><code>{{ items }}</code> - Item List</li><li><code>{{ payment_mode }}</code> - Payment Method</li></ul></div>"
+        },
+        {
+            "fieldname": "pos_template_help",
+            "fieldtype": "HTML",
+            "label": "Template Help",
+            "options": "<div class=\"alert alert-info\"><strong>Example Templates:</strong><br><br><code>Dear {{ customer_name }}, thank you for shopping with {{ company }}! Invoice: {{ invoice_no }} Amount: {{ amount }}</code><br><br><code>Receipt {{ invoice_no }} - {{ amount }} paid via {{ payment_mode }}. Thank you {{ customer_name }}!</code></div>"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "issingle": 1,
+    "links": [],
+    "modified": "2024-01-01 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "SMS Trigger",
+    "name": "SMS Trigger Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "print": 1,
+            "read": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
 }

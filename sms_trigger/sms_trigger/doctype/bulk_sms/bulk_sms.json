@@ -1,194 +1,194 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "field:campaign_name",
- "creation": "2024-01-01 00:00:00",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "campaign_name",
-  "message",
-  "section_break_3",
-  "filter_by",
-  "customer_group",
-  "territory",
-  "column_break_7",
-  "gender",
-  "religion",
-  "profession",
-  "custom_filter",
-  "section_break_11",
-  "scheduled_datetime",
-  "column_break_14",
-  "status",
-  "total_recipients",
-  "success_count",
-  "failed_count",
-  "section_break_17",
-  "send_sms_button",
-  "recipients"
- ],
- "fields": [
-  {
-   "fieldname": "campaign_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Campaign Name",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "message",
-   "fieldtype": "Text Editor",
-   "in_list_view": 1,
-   "label": "Message",
-   "reqd": 1
-  },
-  {
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break",
-   "label": "Filter Recipients"
-  },
-  {
-   "fieldname": "filter_by",
-   "fieldtype": "Select",
-   "label": "Filter By",
-   "options": "\nAll Customers\nCustomer Group\nTerritory\nGender\nReligion\nProfession\nCustom Filter"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Customer Group'",
-   "fieldname": "customer_group",
-   "fieldtype": "Link",
-   "label": "Customer Group",
-   "options": "Customer Group"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Territory'",
-   "fieldname": "territory",
-   "fieldtype": "Link",
-   "label": "Territory",
-   "options": "Territory"
-  },
-  {
-   "fieldname": "column_break_7",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Gender'",
-   "fieldname": "gender",
-   "fieldtype": "Link",
-   "label": "Gender",
-   "options": "Gender"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Religion'",
-   "fieldname": "religion",
-   "fieldtype": "Select",
-   "label": "Religion",
-   "options": "Muslim\nHindu\nChristian\nBuddhist\nOther"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Profession'",
-   "fieldname": "profession",
-   "fieldtype": "Select",
-   "label": "Profession",
-   "options": "Doctor\nEngineer\nTeacher\nBusiness\nStudent\nOther"
-  },
-  {
-   "depends_on": "eval:doc.filter_by=='Custom Filter'",
-   "fieldname": "custom_filter",
-   "fieldtype": "Code",
-   "label": "Custom Filter (JSON)",
-   "options": "JSON"
-  },
-  {
-   "fieldname": "section_break_11",
-   "fieldtype": "Section Break",
-   "label": "Schedule"
-  },
-  {
-   "fieldname": "scheduled_datetime",
-   "fieldtype": "Datetime",
-   "label": "Scheduled Date & Time"
-  },
-  {
-   "fieldname": "column_break_14",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Draft",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Draft\nQueued\nSending\nCompleted\nFailed",
-   "read_only": 1,
-   "depends_on": "eval:doc.docstatus==1",
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "total_recipients",
-   "fieldtype": "Int",
-   "label": "Total Recipients",
-   "read_only": 1,
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "success_count",
-   "fieldtype": "Int",
-   "label": "Success Count",
-   "read_only": 1,
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "failed_count",
-   "fieldtype": "Int",
-   "label": "Failed Count",
-   "read_only": 1,
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "section_break_17",
-   "fieldtype": "Section Break",
-   "label": "Recipients"
-  },
-  {
-   "depends_on": "eval:doc.docstatus==0 && doc.total_recipients>0",
-   "fieldname": "send_sms_button",
-   "fieldtype": "Button",
-   "label": "Sent"
-  },
-  {
-   "fieldname": "recipients",
-   "fieldtype": "Table",
-   "label": "Recipients",
-   "options": "Bulk SMS Recipient"
-  }
- ],
- "index_web_pages_for_search": 1,
- "is_submittable": 1,
- "links": [],
- "modified": "2025-09-22 13:33:17.975206",
- "modified_by": "Administrator",
- "module": "SMS Trigger",
- "name": "Bulk SMS",
- "naming_rule": "By fieldname",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "field:campaign_name",
+    "creation": "2024-01-01 00:00:00",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "campaign_name",
+        "message",
+        "section_break_3",
+        "filter_by",
+        "customer_group",
+        "territory",
+        "column_break_7",
+        "gender",
+        "religion",
+        "profession",
+        "custom_filter",
+        "section_break_11",
+        "scheduled_datetime",
+        "column_break_14",
+        "status",
+        "total_recipients",
+        "success_count",
+        "failed_count",
+        "section_break_17",
+        "send_sms_button",
+        "recipients"
+    ],
+    "fields": [
+        {
+            "fieldname": "campaign_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Campaign Name",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "message",
+            "fieldtype": "Text Editor",
+            "in_list_view": 1,
+            "label": "Message",
+            "reqd": 1
+        },
+        {
+            "fieldname": "section_break_3",
+            "fieldtype": "Section Break",
+            "label": "Filter Recipients"
+        },
+        {
+            "fieldname": "filter_by",
+            "fieldtype": "Select",
+            "label": "Filter By",
+            "options": "\nAll Customers\nCustomer Group\nTerritory\nGender\nReligion\nProfession\nCustom Filter"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Customer Group'",
+            "fieldname": "customer_group",
+            "fieldtype": "Link",
+            "label": "Customer Group",
+            "options": "Customer Group"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Territory'",
+            "fieldname": "territory",
+            "fieldtype": "Link",
+            "label": "Territory",
+            "options": "Territory"
+        },
+        {
+            "fieldname": "column_break_7",
+            "fieldtype": "Column Break"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Gender'",
+            "fieldname": "gender",
+            "fieldtype": "Link",
+            "label": "Gender",
+            "options": "Gender"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Religion'",
+            "fieldname": "religion",
+            "fieldtype": "Select",
+            "label": "Religion",
+            "options": "Muslim\nHindu\nChristian\nBuddhist\nOther"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Profession'",
+            "fieldname": "profession",
+            "fieldtype": "Select",
+            "label": "Profession",
+            "options": "Doctor\nEngineer\nTeacher\nBusiness\nStudent\nOther"
+        },
+        {
+            "depends_on": "eval:doc.filter_by=='Custom Filter'",
+            "fieldname": "custom_filter",
+            "fieldtype": "Code",
+            "label": "Custom Filter (JSON)",
+            "options": "JSON"
+        },
+        {
+            "fieldname": "section_break_11",
+            "fieldtype": "Section Break",
+            "label": "Schedule"
+        },
+        {
+            "fieldname": "scheduled_datetime",
+            "fieldtype": "Datetime",
+            "label": "Scheduled Date & Time"
+        },
+        {
+            "fieldname": "column_break_14",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "Draft",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "label": "Status",
+            "options": "Draft\nScheduled\nQueued\nSending\nCompleted\nFailed",
+            "read_only": 1,
+            "depends_on": "eval:doc.docstatus==1",
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "total_recipients",
+            "fieldtype": "Int",
+            "label": "Total Recipients",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "success_count",
+            "fieldtype": "Int",
+            "label": "Success Count",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "failed_count",
+            "fieldtype": "Int",
+            "label": "Failed Count",
+            "read_only": 1,
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "section_break_17",
+            "fieldtype": "Section Break",
+            "label": "Recipients"
+        },
+        {
+            "depends_on": "eval:doc.docstatus==0 && doc.total_recipients>0",
+            "fieldname": "send_sms_button",
+            "fieldtype": "Button",
+            "label": "Sent"
+        },
+        {
+            "fieldname": "recipients",
+            "fieldtype": "Table",
+            "label": "Recipients",
+            "options": "Bulk SMS Recipient"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2025-09-22 13:33:17.975206",
+    "modified_by": "Administrator",
+    "module": "SMS Trigger",
+    "name": "Bulk SMS",
+    "naming_rule": "By fieldname",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
 }

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"6No-utEr9B\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">SMS</span>\",\"col\":12}},{\"id\":\"tTHMXGqrXx\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bulk SMS\",\"col\":3}},{\"id\":\"59u_y6ShgE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"rdW61-mgX8\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS\",\"col\":4}},{\"id\":\"T1_r3vkY6S\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS Trigger\",\"col\":4}}]",
+ "content": "[{\"id\":\"6No-utEr9B\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">SMS</span>\",\"col\":12}},{\"id\":\"tTHMXGqrXx\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bulk SMS\",\"col\":3}},{\"id\":\"BSv4525Jro\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sms Trigger Settings\",\"col\":3}},{\"id\":\"59u_y6ShgE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"rdW61-mgX8\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS\",\"col\":4}},{\"id\":\"T1_r3vkY6S\",\"type\":\"card\",\"data\":{\"card_name\":\"SMS Trigger\",\"col\":4}}]",
  "creation": "2025-09-22 13:26:18.542838",
  "custom_blocks": [],
  "docstatus": 0,
@@ -102,7 +102,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-09-23 16:23:40.395306",
+ "modified": "2026-01-18 05:19:03.436711",
  "modified_by": "Administrator",
  "module": "SMS Trigger",
  "name": "SMS",
@@ -120,6 +120,13 @@
    "label": "Bulk SMS",
    "link_to": "Bulk SMS",
    "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Sms Trigger Settings",
+   "link_to": "SMS Trigger Settings",
    "type": "DocType"
   }
  ],

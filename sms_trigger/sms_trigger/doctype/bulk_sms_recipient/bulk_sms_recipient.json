@@ -1,103 +1,104 @@
 {
- "actions": [],
- "creation": "2024-01-01 00:00:00.000000",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "customer",
-  "customer_name",
-  "mobile_no",
-  "status",
-  "sent_datetime",
-  "error_message"
- ],
- "fields": [
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
-   "fetch_from": "customer.customer_name",
-   "fieldname": "customer_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Customer Name"
-  },
-  {
-   "fetch_from": "customer.mobile_no",
-   "fieldname": "mobile_no",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Mobile No"
-  },
-  {
-   "fetch_from": "customer.customer_group",
-   "fieldname": "customer_group",
-   "fieldtype": "Link",
-   "label": "Customer Group",
-   "options": "Customer Group"
-  },
-  {
-   "fetch_from": "customer.territory",
-   "fieldname": "territory",
-   "fieldtype": "Link",
-   "label": "Territory",
-   "options": "Territory"
-  },
-  {
-   "fetch_from": "customer.gender",
-   "fieldname": "gender",
-   "fieldtype": "Select",
-   "label": "Gender",
-   "options": "Male\nFemale\nOther"
-  },
-  {
-   "fetch_from": "customer.religion",
-   "fieldname": "religion",
-   "fieldtype": "Select",
-   "label": "Religion",
-   "options": "Islam\nHindu\nChristian\nBuddhist\nOther"
-  },
-  {
-   "fetch_from": "customer.profession",
-   "fieldname": "profession",
-   "fieldtype": "Select",
-   "label": "Profession",
-   "options": "Doctor\nEngineer\nTeacher\nBusiness\nStudent\nOther"
-  },
-  {
-   "default": "Pending",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Status",
-   "options": "Pending\nSent\nFailed"
-  },
-  {
-   "fieldname": "sent_datetime",
-   "fieldtype": "Datetime",
-   "label": "Sent Date & Time"
-  },
-  {
-   "fieldname": "error_message",
-   "fieldtype": "Text",
-   "label": "Error Message"
-  }
- ],
- "index_web_pages_for_search": 1,
- "istable": 1,
- "links": [],
- "modified": "2024-01-01 00:00:00.000000",
- "modified_by": "Administrator",
- "module": "SMS Trigger",
- "name": "Bulk SMS Recipient",
- "owner": "Administrator",
- "permissions": [],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+    "actions": [],
+    "creation": "2024-01-01 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "customer",
+        "customer_name",
+        "mobile_no",
+        "status",
+        "sent_datetime",
+        "error_message"
+    ],
+    "fields": [
+        {
+            "fieldname": "customer",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Customer",
+            "options": "Customer"
+        },
+        {
+            "fetch_from": "customer.customer_name",
+            "fieldname": "customer_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Customer Name"
+        },
+        {
+            "fetch_from": "customer.mobile_no",
+            "fieldname": "mobile_no",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Mobile No"
+        },
+        {
+            "fetch_from": "customer.customer_group",
+            "fieldname": "customer_group",
+            "fieldtype": "Link",
+            "label": "Customer Group",
+            "options": "Customer Group"
+        },
+        {
+            "fetch_from": "customer.territory",
+            "fieldname": "territory",
+            "fieldtype": "Link",
+            "label": "Territory",
+            "options": "Territory"
+        },
+        {
+            "fetch_from": "customer.gender",
+            "fieldname": "gender",
+            "fieldtype": "Select",
+            "label": "Gender",
+            "options": "Male\nFemale\nOther"
+        },
+        {
+            "fieldname": "religion",
+            "fieldtype": "Select",
+            "label": "Religion",
+            "options": "Islam\nHindu\nChristian\nBuddhist\nOther"
+        },
+        {
+            "fieldname": "profession",
+            "fieldtype": "Select",
+            "label": "Profession",
+            "options": "Doctor\nEngineer\nTeacher\nBusiness\nStudent\nOther"
+        },
+        {
+            "default": "Pending",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Status",
+            "options": "Pending\nSent\nFailed\nInvalid",
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "sent_datetime",
+            "fieldtype": "Datetime",
+            "label": "Sent Date & Time",
+            "allow_on_submit": 1
+        },
+        {
+            "fieldname": "error_message",
+            "fieldtype": "Text",
+            "label": "Error Message",
+            "allow_on_submit": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2024-01-01 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "SMS Trigger",
+    "name": "Bulk SMS Recipient",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
 }

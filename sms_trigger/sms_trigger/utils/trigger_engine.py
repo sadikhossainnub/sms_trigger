@@ -38,6 +38,57 @@ def process_trigger_rule(rule):
 	elif trigger_type == "Customer Group":
 		process_customer_group(rule)
 
+def get_filters_from_rule(rule):
+	"""Build filters from rule conditions (JSON or Table)"""
+	filters = []
+	
+	# Handle Visual Builder (Table)
+	if not rule.use_json and rule.condition_table:
+		for row in rule.condition_table:
+			filters.append([row.field, row.operator, row.value])
+			
+	# Handle JSON (Advanced or Legacy)
+	elif rule.conditions:
+		try:
+			conditions = json.loads(rule.conditions)
+			if isinstance(conditions, dict):
+				# Convert simple dict to filter list
+				for key, value in conditions.items():
+					# Skip special keys handled separately (like customer_type in its specific handler)
+					if key in ["customer_type", "customer_group", "item_code"]:
+						continue
+					filters.append([key, "=", value])
+		except:
+			pass
+			
+	return filters
+
+def process_customer_type(rule):
+	"""Process customer type based triggers"""
+	# Get base filters from rule
+	filters = get_filters_from_rule(rule)
+	
+	# Add mandatory filters
+	filters.append(["mobile_no", "!=", ""])
+	filters.append(["sms_enabled", "!=", 0])
+	
+	# Handle special 'customer_type' field from JSON or Table
+	# If using JSON, we need to extract customer_type specifically if it exists there
+	if rule.use_json and rule.conditions:
+		try:
+			cond = json.loads(rule.conditions)
+			if cond.get("customer_type"):
+				filters.append(["customer_type", "=", cond.get("customer_type")])
+		except:
+			pass
+			
+	# Note: For Visual Builder, user should add "Customer Type" = "Individual" row explicitly
+	
+	customers = frappe.get_all("Customer", 
+		filters=filters,
+		fields=["name", "customer_name", "mobile_no"]
+	)
+	
 def process_invoice_due(rule):
 	"""Process overdue invoices"""
 	days_overdue = rule.days_interval or 7
@@ -162,21 +213,27 @@ def process_inactive_customer(rule):
 
 def process_repurchase_promotion(rule):
 	"""Process repurchase promotion"""
-	try:
-		conditions = json.loads(rule.conditions or "{}")
-		if not isinstance(conditions, dict):
-			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
-			return
-	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
-		return
+	item_code = None
 	
-	item_code = conditions.get("item_code")
-	days_ago = rule.days_interval or 30
+	# Try extracting item_code from JSON
+	if rule.use_json and rule.conditions:
+		try:
+			conditions = json.loads(rule.conditions)
+			item_code = conditions.get("item_code")
+		except:
+			pass
+			
+	# Try extracting item_code from Visual Builder
+	if not item_code and rule.condition_table:
+		for row in rule.condition_table:
+			if row.field == "item_code" and row.operator == "Equals":
+				item_code = row.value
+				break
 	
 	if not item_code:
 		return
 	
+	days_ago = rule.days_interval or 30
 	cutoff_date = add_days(getdate(), -days_ago)
 	
 	customers = frappe.db.sql("""
@@ -214,75 +271,24 @@ def process_repurchase_promotion(rule):
 			except Exception as e:
 				frappe.log_error(f"Error formatting message for customer {customer.customer}: {str(e)}", "SMS Trigger Error")
 
-def process_customer_type(rule):
-	"""Process customer type based triggers"""
-	try:
-		conditions = json.loads(rule.conditions or "{}")
-		if not isinstance(conditions, dict):
-			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
-			return
-	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
-		return
-	
-	customer_type = conditions.get("customer_type")
-	if not customer_type:
-		return
-	
-	filters = {"customer_type": customer_type, "mobile_no": ["!=", ""], "sms_enabled": ["!=", 0]}
-	
-	for key, value in conditions.items():
-		if key != "customer_type" and frappe.get_meta("Customer").has_field(key):
-			filters[key] = value
-	
-	customers = frappe.get_all("Customer", 
-		filters=filters,
-		fields=["name", "customer_name", "mobile_no"]
-	)
-	
-	for customer in customers:
-		existing = frappe.db.exists("Scheduled SMS", {
-			"customer": customer.name,
-			"trigger_type": "Customer Type",
-			"scheduled_datetime": [">=", add_days(getdate(), -30)]
-		})
-		
-		if not existing:
-			try:
-				context = {
-					"customer_name": customer.customer_name,
-					"today": frappe.utils.today(),
-				}
-				message = frappe.render_template(rule.message_template, context)
-				create_scheduled_sms(
-					customer=customer.name,
-					message=message,
-					trigger_type="Customer Type"
-				)
-			except Exception as e:
-				frappe.log_error(f"Error formatting message for customer {customer.name}: {str(e)}", "SMS Trigger Error")
-
 def process_customer_group(rule):
 	"""Process customer group based triggers"""
-	try:
-		conditions = json.loads(rule.conditions or "{}")
-		if not isinstance(conditions, dict):
-			frappe.log_error(f"Conditions for rule {rule.name} must be a JSON object, got {type(conditions)}", "SMS Trigger Error")
-			return
-	except json.JSONDecodeError:
-		frappe.log_error(f"Invalid JSON format in conditions for rule {rule.name}", "SMS Trigger Error")
-		return
+	# Get base filters from rule
+	filters = get_filters_from_rule(rule)
 	
-	customer_group = conditions.get("customer_group")
-	if not customer_group:
-		return
+	# Add mandatory filters
+	filters.append(["mobile_no", "!=", ""])
+	filters.append(["sms_enabled", "!=", 0])
 	
-	filters = {"customer_group": customer_group, "mobile_no": ["!=", ""], "sms_enabled": ["!=", 0]}
-	
-	for key, value in conditions.items():
-		if key != "customer_group" and frappe.get_meta("Customer").has_field(key):
-			filters[key] = value
-	
+	# Handle special 'customer_group' field from JSON or Table
+	if rule.use_json and rule.conditions:
+		try:
+			cond = json.loads(rule.conditions)
+			if cond.get("customer_group"):
+				filters.append(["customer_group", "=", cond.get("customer_group")])
+		except:
+			pass
+			
 	customers = frappe.get_all("Customer", 
 		filters=filters,
 		fields=["name", "customer_name", "mobile_no"]
@@ -309,6 +315,7 @@ def process_customer_group(rule):
 				)
 			except Exception as e:
 				frappe.log_error(f"Error formatting message for customer {customer.name}: {str(e)}", "SMS Trigger Error")
+
 
 def create_scheduled_sms(customer, message, trigger_type, reference_doctype=None, reference_name=None, scheduled_datetime=None):
 	"""Create scheduled SMS entry"""
