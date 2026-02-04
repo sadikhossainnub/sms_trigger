@@ -4,12 +4,12 @@ def get_notification_config():
 	"""Add SMS as notification channel"""
 	return {
 		"for_doctype": {
-			"Sales Invoice": {
-				"sms": "sms_trigger.sms_trigger.notifications.send_invoice_sms"
-			},
-			"Customer": {
-				"sms": "sms_trigger.sms_trigger.notifications.send_customer_sms"
-			}
+			# "Sales Invoice": {
+			# 	"sms": "sms_trigger.sms_trigger.notifications.send_invoice_sms"
+			# },
+			# "Customer": {
+			# 	"sms": "sms_trigger.sms_trigger.notifications.send_customer_sms"
+			# }
 		}
 	}
 
